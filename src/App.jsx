@@ -6,18 +6,24 @@ import Projects from './sections/Projects'
 import CaseStudies from './sections/CaseStudy'
 import Experience from './sections/Experience'
 import Contact from './sections/Contact'
+import Cursor from './components/layout/Cursor'
 
 const App = () => {
   return (
-    <div>
+    <>
+    <Cursor />
+    <div className="relative">
       <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <CaseStudies />
-      <Experience />
-      <Contact />
+      <div className="relative z-20">
+        <About />
+        <Skills />
+        <Projects />
+        <CaseStudies />
+        <Experience />
+        <Contact />
+      </div>
     </div>
+    </>
   )
 }
 

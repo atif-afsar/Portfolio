@@ -3,7 +3,7 @@ import { experience } from "../data/experience";
 
 const Experience = () => {
   return (
-    <section className="bg-white text-black py-40 px-6 md:px-20">
+    <section className="relative z-20 bg-white text-black py-40 px-6 md:px-20">
 
       {/* Label */}
       <p className="text-xs tracking-widest text-yellow-500 mb-16">

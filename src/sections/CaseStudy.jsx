@@ -14,7 +14,7 @@ const Block = ({ title, children }) => (
 
 const CaseStudies = () => {
   return (
-    <section className="bg-black text-white py-40 px-6 md:px-20">
+    <section className="relative z-20 bg-black text-white py-40 px-6 md:px-20">
 
       {/* Label */}
       <p className="text-xs tracking-widest text-yellow-400 mb-16">
