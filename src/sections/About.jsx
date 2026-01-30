@@ -1,51 +1,6 @@
 import { motion } from "framer-motion";
 
 const About = () => {
-  // Scroll functions
-  const scrollToHome = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const scrollToAbout = () => {
-    const aboutSection = document.querySelector('[data-section="about"]');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const scrollToResume = () => {
-    // Add resume section scroll or download
-    console.log("Resume clicked");
-  };
-
-  const scrollToPortfolio = () => {
-    const projectsSection = document.querySelector('[data-section="projects"]');
-    if (projectsSection) {
-      projectsSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const scrollToTestimonials = () => {
-    // Add testimonials section scroll
-    console.log("Testimonials clicked");
-  };
-
-  const scrollToContact = () => {
-    const contactSection = document.querySelector('[data-section="contact"]');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // Navigation items
-  const navItems = [
-    { label: "HOME", onClick: scrollToHome, active: false },
-    { label: "ABOUT ME", onClick: scrollToAbout, active: true },
-    { label: "RESUME", onClick: scrollToResume, active: false },
-    { label: "PORTFOLIO", onClick: scrollToPortfolio, active: false },
-    { label: "TESTIMONIALS", onClick: scrollToTestimonials, active: false },
-    { label: "CONTACT", onClick: scrollToContact, active: false },
-  ];
 
   // Statistics data
   const stats = [
@@ -96,32 +51,8 @@ const About = () => {
   return (
     <section data-section="about" className="relative min-h-screen bg-white z-20">
       <div className="w-full min-h-screen">
-        <div className="flex">
-          {/* Left Navigation Bar */}
-          <div className="fixed left-0 top-0 bottom-0 w-16 bg-yellow-400 flex flex-col items-center py-8 z-10">
-            <div className="flex flex-col items-center gap-2">
-              {navItems.map((item, index) => (
-                <div key={item.label} className="flex flex-col items-center">
-                  <motion.button
-                    onClick={item.onClick}
-                    className={`text-xs font-bold uppercase tracking-wider px-2 py-1 transition-colors ${
-                      item.active ? "text-black" : "text-gray-700 hover:text-black"
-                    }`}
-                    whileHover={{ scale: 1.1 }}
-                    style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
-                  >
-                    {item.label}
-                  </motion.button>
-                  {index < navItems.length - 1 && (
-                    <div className="h-8 w-0.5 border-l-2 border-dashed border-gray-400 my-1" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1 ml-16 px-6 md:px-12 lg:px-20 xl:px-24 py-12 md:py-20 max-w-6xl">
+        {/* Main Content */}
+        <div className="ml-16 px-6 md:px-12 lg:px-20 xl:px-24 py-12 md:py-20 max-w-6xl">
             {/* About Me Title with Dotted Lines */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -224,7 +155,6 @@ const About = () => {
                 ))}
               </div>
             </motion.div>
-          </div>
         </div>
       </div>
     </section>

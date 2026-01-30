@@ -136,7 +136,7 @@ const Hero = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center overflow-hidden z-10"
+      className="relative min-h-screen flex items-center overflow-hidden z-10 ml-16"
     >
       <div className="w-full h-screen">
         <div className="grid grid-cols-1 lg:grid-cols-2 h-full">

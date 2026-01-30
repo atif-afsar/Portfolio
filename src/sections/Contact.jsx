@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const Contact = () => {
   return (
-    <section data-section="contact" className="relative z-20 bg-black text-white py-40 px-6 md:px-20 text-center">
+    <section data-section="contact" className="relative z-20 bg-black text-white py-40 px-6 md:px-20 text-center ml-16">
 
       {/* Label */}
       <p className="text-xs tracking-widest text-yellow-400 mb-10">

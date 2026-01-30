@@ -7,18 +7,17 @@ import CaseStudies from './sections/CaseStudy'
 import Experience from './sections/Experience'
 import Contact from './sections/Contact'
 import Cursor from './components/layout/Cursor'
+import Sidebar from './components/layout/Sidebar'
 
 const App = () => {
   return (
     <>
     <Cursor />
+    <Sidebar />
     <div className="relative">
       <Hero />
       <div className="relative z-20">
         <About />
-        <Skills />
-        <Projects />
-        <CaseStudies />
         <Experience />
         <Contact />
       </div>
