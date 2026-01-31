@@ -8,6 +8,7 @@ import Experience from './sections/Experience'
 import Contact from './sections/Contact'
 import Cursor from './components/layout/Cursor'
 import Sidebar from './components/layout/Sidebar'
+import MyServices from './sections/MyServices'
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <About />
         <Experience />
         <Projects />
+        <MyServices />
         <Contact />
       </div>
     </div>
