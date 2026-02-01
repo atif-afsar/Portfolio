@@ -13,16 +13,16 @@ const EASE = [0.25, 0.46, 0.45, 0.94];
    ============================================================ */
 const stats = [
   { number: 2,  suffix: "+", label: "Years Experience" },
-  { number: 10, suffix: "+", label: "Projects Done" },
-  { number: 5,  suffix: "+", label: "Happy Clients" },
-  { number: 50, suffix: "+", label: "GitHub Repos" },
+  { number: 7, suffix: "+", label: "Live Projects" },
+  { number: 10,  suffix: "+", label: "Technologies Mastered" },
+  { number: 2, suffix: "+", label: "Current Internships" },
 ];
 
 const services = [
   {
     title: "Frontend Development",
     description:
-      "Building responsive, interactive user interfaces with React, Tailwind CSS, and modern web technologies. Pixel-perfect and performance-first.",
+      "Crafting exceptional user interfaces with React, JavaScript, HTML5, CSS3, and Tailwind CSS. I deliver pixel-perfect, responsive designs with seamless animations using Framer Motion and optimal performance across all devices.",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="16 18 22 12 16 6" />
@@ -33,7 +33,7 @@ const services = [
   {
     title: "Backend Development",
     description:
-      "Creating scalable server-side applications with Node.js, Express, and MongoDB. RESTful APIs built for reliability and speed at scale.",
+      "Building robust server architectures with Node.js, Express.js, and MongoDB. I create scalable REST APIs, implement secure authentication systems, and optimize database performance for enterprise-level applications with Firebase integration.",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
@@ -43,14 +43,47 @@ const services = [
     ),
   },
   {
-    title: "Full-Stack Solutions",
+    title: "AI Integration & Innovation",
     description:
-      "End-to-end development from concept to deployment. Seamless integration across the entire stack with clean architecture and optimal performance.",
+      "Pioneering AI-powered applications with OpenAI/GPT integration, emotion detection using Face API, and intelligent user experiences. I transform complex AI concepts into intuitive, production-ready solutions with real-time capabilities.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m15.5-6.5l-4.24 4.24M7.76 7.76L3.52 3.52m12.96 12.96l-4.24-4.24M7.76 16.24L3.52 20.48" />
+      </svg>
+    ),
+  },
+  {
+    title: "Full-Stack Web Applications",
+    description:
+      "End-to-end development from concept to deployment using modern tech stack. I build complete web solutions with React frontends, Node.js backends, database integration, and deployment optimization using tools like Vite and npm.",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
         <line x1="2" y1="12" x2="22" y2="12" />
         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Client Website Development",
+    description:
+      "Creating professional websites for real clients including healthcare, education, and business sectors. I deliver responsive, performance-optimized solutions with custom contact systems, admin panels, and brand-aligned designs.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+  },
+  {
+    title: "Performance Optimization",
+    description:
+      "Optimizing web applications for maximum performance using modern build tools like Vite, implementing lazy loading, code splitting, and responsive design principles. I ensure fast loading times and smooth user experiences across all platforms.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
       </svg>
     ),
   },
@@ -243,7 +276,7 @@ const About = () => {
             className="mb-2"
           >
             <p className="text-xl md:text-2xl lg:text-3xl text-black/80">
-              I'm <span className="font-bold text-black">Atif Afsar</span>, Full-Stack Developer
+              I'm <span className="font-bold text-black">Atif Afsar</span>, Computer Science Engineer & Software Developer
             </p>
             {/* Yellow underline — draws in after name appears */}
             <motion.div
@@ -265,10 +298,11 @@ const About = () => {
             }
             transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
           >
-            Enthusiastic Full-Stack Developer with a passion for creating interactive, scalable,
-            and visually polished digital experiences. I specialize in React, Node.js, and
-            JavaScript — focusing on clean architecture, smooth animations, and thoughtful
-            user experience. My work combines engineering excellence with modern design principles.
+            Passionate Full-Stack Developer with a strong foundation in Computer Science and hands-on experience 
+            building modern, scalable web applications using React, Node.js, and JavaScript. I excel at creating 
+            seamless user experiences, optimizing performance, and writing clean, maintainable code. Currently pursuing 
+            B.Tech in Computer Science Engineering while contributing to innovative teams and growing as a developer 
+            in a dynamic environment.
           </motion.p>
         </div>
 

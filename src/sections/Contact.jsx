@@ -6,7 +6,7 @@ const Contact = () => {
 
       {/* Label */}
       <p className="text-xs tracking-widest text-yellow-400 mb-10">
-        CONTACT / OPEN CHANNEL
+        CONTACT / LET'S CONNECT
       </p>
 
       {/* Headline */}
@@ -17,7 +17,7 @@ const Contact = () => {
         transition={{ duration: 0.6 }}
         className="text-4xl md:text-6xl font-bold mb-8"
       >
-        Let’s build something real.
+        Ready to build the future together?
       </motion.h2>
 
       {/* Subtext */}
@@ -28,35 +28,42 @@ const Contact = () => {
         transition={{ delay: 0.2 }}
         className="max-w-xl mx-auto text-white/70 mb-16 text-lg"
       >
-        Whether it’s a product, a system, or an idea —
-        I’m always open to meaningful collaboration.
+        From Wahid Nagar, Aligarh to the world — I'm passionate about creating 
+        innovative solutions that make a difference. Let's connect and build something extraordinary.
       </motion.p>
 
       {/* Actions */}
       <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
         <a
-          href="mailto:your.email@example.com"
-          className="border border-yellow-400 px-10 py-4 text-yellow-400 hover:bg-yellow-400 hover:text-black transition"
+          href="mailto:atifafsar648@gmail.com"
+          className="border border-yellow-400 px-10 py-4 text-yellow-400 hover:bg-yellow-400 hover:text-black transition font-bold"
         >
           Email Me
         </a>
 
         <a
-          href="https://www.linkedin.com"
+          href="https://www.linkedin.com/in/atif-afsar"
           target="_blank"
           rel="noreferrer"
-          className="border border-white/30 px-10 py-4 hover:border-yellow-400 transition"
+          className="border border-white/30 px-10 py-4 hover:border-yellow-400 hover:text-yellow-400 transition font-bold"
         >
           LinkedIn
         </a>
 
         <a
-          href="https://github.com"
+          href="https://github.com/atif-afsar"
           target="_blank"
           rel="noreferrer"
-          className="border border-white/30 px-10 py-4 hover:border-yellow-400 transition"
+          className="border border-white/30 px-10 py-4 hover:border-yellow-400 hover:text-yellow-400 transition font-bold"
         >
           GitHub
+        </a>
+
+        <a
+          href="tel:+919389030329"
+          className="border border-white/30 px-10 py-4 hover:border-yellow-400 hover:text-yellow-400 transition font-bold"
+        >
+          Call Me
         </a>
       </div>
 
