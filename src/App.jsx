@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import About from './sections/About'
 import Hero from './sections/Hero'
 import Skills from './sections/Skills'
@@ -9,8 +10,24 @@ import Sidebar from './components/layout/Sidebar'
 import MyServices from './sections/MyServices'
 import Marquee from './sections/Marquee'
 import Experimental from './sections/Experimental'
+import Loader from './sections/Loader'
 
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Reset loading state on page refresh
+    setIsLoading(true)
+  }, [])
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false)
+  }
+
+  if (isLoading) {
+    return <Loader onLoadingComplete={handleLoadingComplete} />
+  }
+
   return (
     <>
     <Cursor />
@@ -20,11 +37,12 @@ const App = () => {
       <div className="relative z-20">
         <Marquee />
         <About />
-        <Experimental />
         <Skills />
         <Experience />
         <Projects />
         <MyServices />
+        <Experimental />
+
         <Contact />
       </div>
     </div>

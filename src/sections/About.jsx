@@ -1,114 +1,147 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const AboutSection = () => {
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-20%" });
   
+  // Scroll progress for the entire section
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"]
+    offset: ["start start", "end end"]
   });
 
-  const pathLength = useTransform(scrollYProgress, [0.1, 0.5], [0, 1]);
-  const textY = useTransform(scrollYProgress, [0, 1], [0, -50]); // Subtle parallax
+  // Manifesto lines
+  const manifestoLines = [
+    { text: "I DESIGN WITH ", emphasis: "INTENT", suffix: "." },
+    { text: "I BUILD ", emphasis: "EXPERIENCES", suffix: ", NOT SCREENS." },
+    { text: "MOTION IS NOT DECORATION. ", emphasis: "IT IS MEANING", suffix: "." },
+    { text: "EVERY INTERACTION ", emphasis: "EARNS ITS PLACE", suffix: "." },
+    { text: "PERFORMANCE IS A ", emphasis: "FEATURE", suffix: ", NOT AN AFTERTHOUGHT." },
+    { text: "I CARE ABOUT ", emphasis: "DETAILS", suffix: " MOST PEOPLE MISS." },
+    { text: "I SHIP WORK I'M ", emphasis: "PROUD", suffix: " TO PUT MY NAME ON." }
+  ];
 
-  // Animation Variants
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 60 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.8, ease: [0.33, 1, 0.68, 1] } 
-    }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.3 }
-    }
+  // Calculate animations for each line based on scroll
+  const getLineAnimations = (index) => {
+    const total = manifestoLines.length;
+    const segmentSize = 1 / total;
+    const start = index * segmentSize;
+    const end = (index + 1) * segmentSize;
+    
+    // Opacity animation
+    const opacity = useTransform(
+      scrollYProgress,
+      [start - 0.1, start, end, end + 0.1],
+      [0.15, 1, 1, 0.15]
+    );
+    
+    // Subtle scale animation
+    const scale = useTransform(
+      scrollYProgress,
+      [start - 0.05, start + 0.02, end - 0.02, end + 0.05],
+      [0.98, 1, 1, 0.98]
+    );
+    
+    // Subtle Y movement
+    const y = useTransform(
+      scrollYProgress,
+      [start - 0.05, start + 0.02, end - 0.02, end + 0.05],
+      [10, 0, 0, -10]
+    );
+    
+    return { opacity, scale, y };
   };
 
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-screen bg-[#0a0a0a] text-white px-6 py-32 md:px-20 lg:px-32 flex flex-col justify-center font-sans overflow-hidden"
+      className="relative w-full bg-black text-white"
+      style={{ height: '350vh' }}
     >
-      {/* BACKGROUND ACCENT: Subtle Glow */}
-      <div className="absolute top-1/4 -right-20 w-96 h-96 bg-[#FFD700]/5 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* SIGNATURE LINE: Smoother Progress */}
-      <div className="absolute left-6 md:left-12 top-0 h-full w-[1px] bg-white/10">
-        <motion.div 
-          style={{ scaleY: pathLength }}
-          className="w-full h-full bg-[#FFD700] origin-top shadow-[0_0_15px_rgba(255,215,0,0.5)]"
-        />
-      </div>
-
-      <motion.div 
-        style={{ y: textY }}
-        className="max-w-[1400px] mx-auto w-full relative z-10"
-      >
-        {/* LARGE EDITORIAL HEADLINE with Masking */}
-        <div className="mb-24 md:mb-40 max-w-6xl">
-          <motion.h2 
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            variants={staggerContainer}
-            className="text-6xl md:text-[clamp(3.5rem,9vw,8.5rem)] font-bold leading-[0.9] tracking-tight"
-          >
-            {["I create", "digital experiences", "that push boundaries", "and inspire users."].map((line, i) => (
-              <div key={i} className="overflow-hidden mb-2">
-                <motion.span 
-                  variants={fadeInUp} 
-                  className={`block ${line.includes('digital') || line.includes('boundaries') || line.includes('inspire') ? 'text-[#FFD700]' : 'text-white'}`}
+      {/* Sticky container for manifesto text */}
+      <div className="sticky top-0 left-0 w-full h-screen flex items-center justify-center px-6 md:px-12 lg:px-20 xl:px-32 py-16 md:py-20 overflow-hidden">
+        
+        {/* All manifesto lines visible together */}
+        <div className="relative w-full max-w-[1300px] space-y-4 md:space-y-5 lg:space-y-6">
+          {manifestoLines.map((line, index) => {
+            const { opacity, scale, y } = getLineAnimations(index);
+            
+            return (
+              <motion.div
+                key={index}
+                style={{ 
+                  opacity,
+                  scale,
+                  y
+                }}
+                className="relative will-change-transform"
+              >
+                <h2 
+                  className="text-[clamp(1.25rem,2.8vw,2.5rem)] md:text-[clamp(1.5rem,3vw,2.75rem)] font-black leading-[1.25] tracking-[-0.02em]"
+                  style={{ fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif' }}
                 >
-                  {line}
-                </motion.span>
-              </div>
-            ))}
-          </motion.h2>
+                  <span className="text-white/80">{line.text}</span>
+                  <span className="text-[#FFD700]">{line.emphasis}</span>
+                  <span className="text-white/80">{line.suffix}</span>
+                </h2>
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* ASYMMETRICAL BODY GRID */}
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16"
-        >
-          {/* Column 1 */}
-          <motion.div variants={fadeInUp} className="space-y-8 border-l border-white/10 pl-8">
-            <p className="text-xl md:text-2xl font-light leading-relaxed text-gray-300">
-              I’m a <span className="text-white font-medium italic">Full-Stack Developer</span> with a deep focus on 
-              frontend excellence. My passion lies in building high-quality, responsive websites 
-              that don’t just work—they <span className="text-[#FFD700]">captivate.</span>
-            </p>
-            <p className="text-lg text-gray-500 max-w-md">
-              Every project I touch receives the same treatment: meticulous attention to 
-              <span className="text-white/80"> performance, user experience,</span> and 
-              <span className="text-white/80"> visual polish.</span>
-            </p>
-          </motion.div>
+        {/* Minimal progress indicator */}
+        <div className="hidden lg:flex absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 flex-col items-center space-y-3">
+          {manifestoLines.map((_, index) => {
+            const total = manifestoLines.length;
+            const segmentSize = 1 / total;
+            const start = index * segmentSize;
+            const end = (index + 1) * segmentSize;
+            
+            const fillProgress = useTransform(
+              scrollYProgress,
+              [start, end],
+              [0, 1]
+            );
+            
+            const dotOpacity = useTransform(
+              scrollYProgress,
+              [start - 0.1, start, end, end + 0.1],
+              [0.2, 1, 1, 0.2]
+            );
+            
+            return (
+              <motion.div
+                key={index}
+                style={{ opacity: dotOpacity }}
+                className="w-1 h-8 bg-white/10 rounded-full overflow-hidden"
+              >
+                <motion.div 
+                  style={{ 
+                    scaleY: fillProgress
+                  }}
+                  className="w-full h-full bg-[#FFD700] origin-top"
+                />
+              </motion.div>
+            );
+          })}
+        </div>
 
-          {/* Column 2 */}
-          <motion.div variants={fadeInUp} className="space-y-8 md:mt-20 border-l border-white/10 pl-8">
-            <p className="text-xl md:text-2xl font-light leading-relaxed text-gray-300">
-              From <span className="text-white font-medium">React</span> and 
-              <span className="text-white font-medium"> Node.js</span> to complex animations, 
-              I bring a comprehensive skill set to every challenge.
-            </p>
-            <p className="text-lg text-gray-500 max-w-md">
-              I believe the web should be <span className="text-[#FFD700] underline underline-offset-8 decoration-1">beautiful, fast,</span> and 
-              <span className="text-[#FFD700]"> memorable.</span> That’s what I deliver.
-            </p>
-          </motion.div>
-          
-        </motion.div>
-      </motion.div>
+        {/* Animated background glow on active section */}
+        <motion.div
+          style={{
+            opacity: useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0, 0.3, 0.3, 0])
+          }}
+          className="absolute inset-0 bg-gradient-radial from-[#FFD700]/5 via-transparent to-transparent pointer-events-none"
+        />
+
+      </div>
+
+      {/* Minimal accent line - top left */}
+      <div className="absolute left-6 md:left-12 lg:left-20 top-24 w-20 h-px bg-[#FFD700]/50" />
+      
+      {/* Bottom fade transition */}
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+      
     </section>
   );
 };

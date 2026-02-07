@@ -366,7 +366,7 @@ const FlameIcon = ({ size = 24, strokeWidth = 1.5, className, ...props }) => (
     fill="none" 
     stroke="currentColor" 
     strokeWidth={strokeWidth} 
-    strokeLinecap="round" 
+    strokeLinecap="round"  
     strokeLinejoin="round" 
     className={className}
     {...props}
