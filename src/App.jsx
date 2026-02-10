@@ -11,6 +11,8 @@ import MyServices from './sections/MyServices'
 import Marquee from './sections/Marquee'
 import Experimental from './sections/Experimental'
 import Loader from './sections/Loader'
+import TechStack from './sections/TechStack'
+
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -38,6 +40,7 @@ const App = () => {
         <Marquee />
         <About />
         <Skills />
+       <TechStack />
         <Experience />
         <Projects />
         <MyServices />
