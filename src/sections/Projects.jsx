@@ -165,9 +165,9 @@ const ProjectCard = ({ project, index, scrollYProgress }) => {
         onMouseLeave={() => setHovered(false)}
       >
         {/* ── Media block ── */}
-        <div className="relative w-full" style={{ aspectRatio: "16/10" }}>
+        <div className="relative w-full overflow-hidden flex items-center justify-center bg-gray-100" style={{ aspectRatio: "16/10" }}>
           <motion.div
-            className="absolute inset-0"
+            className="absolute inset-0 flex items-center justify-center"
             animate={{ scale: hovered ? 1.05 : 1 }}
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
@@ -179,13 +179,13 @@ const ProjectCard = ({ project, index, scrollYProgress }) => {
                 muted
                 loop
                 playsInline
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             ) : (
               <img
                 src={project.image}
                 alt={project.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 loading="lazy"
               />
             )}

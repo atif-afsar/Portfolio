@@ -1,84 +1,99 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
 
-const Loader = ({ onLoadingComplete }) => {
-  const [showText, setShowText] = useState(false)
-  const [exitLoader, setExitLoader] = useState(false)
+const Loader = ({ onComplete }) => {
+  const containerRef = useRef(null);
+  const svgRef = useRef(null);
+  const pathRef = useRef(null);
 
   useEffect(() => {
-    // Disable scrolling while loader is active
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden';
 
-    // Show text after stripes cover screen
-    const textTimer = setTimeout(() => setShowText(true), 900)
-    
-    // Start exit animation
-    const exitTimer = setTimeout(() => {
-      setShowText(false)
-      setTimeout(() => setExitLoader(true), 200)
-    }, 1800)
-    
-    // Complete loading and re-enable scrolling
-    const completeTimer = setTimeout(() => {
-      document.body.style.overflow = 'auto'
-      onLoadingComplete()
-    }, 2500)
+    const tl = gsap.timeline({
+      onComplete: () => {
+        document.body.style.overflow = 'auto';
+        if (onComplete) onComplete();
+      }
+    });
+
+    const pathLength = pathRef.current.getTotalLength();
+
+    // Prepare the path for the drawing animation
+    gsap.set(pathRef.current, {
+      strokeDasharray: pathLength,
+      strokeDashoffset: pathLength,
+      opacity: 1
+    });
+
+    tl.to({}, { duration: 0.5 }) // Initial pause
+      // The "Writing" animation
+      .to(pathRef.current, {
+        strokeDashoffset: 0,
+        duration: 2.2, // Slightly slower for readability
+        ease: "power2.inOut"
+      })
+      // Cinematic scale and glow
+      .to(svgRef.current, {
+        scale: 1.08,
+        filter: "drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3))",
+        duration: 0.8,
+        ease: "power2.out"
+      }, "-=0.4")
+      .to({}, { duration: 0.6 }) // Hold
+      // Slide reveal
+      .to(containerRef.current, {
+        yPercent: -100,
+        duration: 1.2,
+        ease: "expo.inOut"
+      })
+      .to(svgRef.current, {
+        opacity: 0,
+        y: -60,
+        duration: 0.8,
+        ease: "power2.in"
+      }, "-=1.1");
 
     return () => {
-      clearTimeout(textTimer)
-      clearTimeout(exitTimer)
-      clearTimeout(completeTimer)
-      document.body.style.overflow = 'auto'
-    }
-  }, [onLoadingComplete])
-
-  // Create 8 vertical stripes
-  const stripes = Array.from({ length: 8 })
+      tl.kill();
+      document.body.style.overflow = 'auto';
+    };
+  }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black overflow-hidden">
-      {/* Vertical Yellow Stripes */}
-      {stripes.map((_, index) => (
-        <motion.div
-          key={index}
-          className="absolute top-0 bottom-0 bg-yellow-400"
-          style={{
-            left: `${(index * 100) / stripes.length}%`,
-            width: `${100 / stripes.length}%`,
-          }}
-          initial={{ y: '100%' }}
-          animate={{
-            y: exitLoader ? '-100%' : '0%'
-          }}
-          transition={{
-            duration: 0.7,
-            delay: exitLoader ? index * 0.04 : index * 0.05,
-            ease: [0.65, 0, 0.35, 1]
-          }}
-        />
-      ))}
+    <div 
+      ref={containerRef}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#FFD400]"
+    >
+      <div className="relative w-full max-w-[350px] md:max-w-[550px] px-10">
+        <svg 
+          ref={svgRef}
+          viewBox="0 0 500 200" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-auto"
+        >
+          {/* Handwritten Cursive "Atif" Path */}
+          <path
+            ref={pathRef}
+            d="M71,135 C71,135 94,36 110,36 C126,36 108,135 108,135 M85,90 L135,90 M170,135 L170,75 M155,75 L185,75 M210,135 L210,85 M210,65 L212,65 M240,135 L240,75 C240,75 240,55 260,55 C280,55 275,75 275,75 L275,135 M255,95 L295,95"
+            stroke="#0A0A0A"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <title>Atif</title>
+        </svg>
+      </div>
 
-      {/* Center Text */}
-      <AnimatePresence>
-        {showText && (
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center z-10 px-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ 
-              duration: 0.5,
-              ease: [0.65, 0, 0.35, 1]
-            }}
-          >
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-white uppercase tracking-tight text-center leading-none">
-              Atif Afsar
-            </h1>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="absolute bottom-10 left-10 overflow-hidden">
+        <div className="flex items-center gap-3">
+            <span className="text-[10px] font-black tracking-[0.4em] text-[#0A0A0A] uppercase opacity-60">
+                System.Auth / Atif Afsar
+            </span>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Loader
+export default Loader;

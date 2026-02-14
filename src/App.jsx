@@ -27,7 +27,7 @@ const App = () => {
   }
 
   if (isLoading) {
-    return <Loader onLoadingComplete={handleLoadingComplete} />
+    return <Loader onComplete={handleLoadingComplete} />
   }
 
   return (

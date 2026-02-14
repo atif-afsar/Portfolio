@@ -1,213 +1,197 @@
-import React, { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-// Note: You can use react-icons or any SVG library for the icons
 import { 
-  SiNextdotjs, SiReact, SiTailwindcss, SiFramer, 
-  SiTypescript, SiNodedotjs, SiPostgresql, SiGreensock, 
-  SiJavascript,
-  SiHtml5,
-  SiCss3,
-  SiThreedotjs,
-  SiPostman,
-  SiExpress,
-  SiSupabase,
-  SiFirebase,
-  SiVercel,
-  SiNetlify,
-  SiDocker,
-  SiGit,
-  SiGithub,
-  SiFigma,
-  SiGoogle,
-  SiSpeedtest,
-  SiW3Schools,
-  SiMongodb,
-  SiSimpleicons
+  SiNextdotjs, SiReact, SiTypescript, SiJavascript, SiHtml5, SiCss3, SiTailwindcss,
+  SiGreensock, SiFramer, SiSimpleicons,
+  SiNodedotjs, SiExpress, SiPostman,
+  SiMongodb, SiSupabase, SiFirebase,
+  SiVercel, SiNetlify, SiDocker,
+  SiGit, SiGithub,
+  SiGoogle, SiSpeedtest
 } from 'react-icons/si';
 
-gsap.registerPlugin(ScrollTrigger);
+// All techs with floating positions
+const ALL_TECHS = [
+  { name: "Next.js", icon: SiNextdotjs, x: "8%", y: "15%" },
+  { name: "React", icon: SiReact, x: "15%", y: "35%" },
+  { name: "TypeScript", icon: SiTypescript, x: "22%", y: "55%" },
+  { name: "JavaScript (ES6+)", icon: SiJavascript, x: "12%", y: "75%" },
+  { name: "HTML5", icon: SiHtml5, x: "78%", y: "20%" },
+  { name: "CSS3", icon: SiCss3, x: "85%", y: "40%" },
+  { name: "Tailwind CSS", icon: SiTailwindcss, x: "88%", y: "65%" },
+  { name: "GSAP", icon: SiGreensock, x: "5%", y: "45%" },
+  { name: "Framer Motion", icon: SiFramer, x: "92%", y: "50%" },
+  { name: "Lenis", icon: SiSimpleicons, x: "50%", y: "10%" },
+  { name: "Node.js", icon: SiNodedotjs, x: "35%", y: "25%" },
+  { name: "Express.js", icon: SiExpress, x: "65%", y: "30%" },
+  { name: "REST APIs", icon: SiPostman, x: "42%", y: "70%" },
+  { name: "MongoDB", icon: SiMongodb, x: "28%", y: "85%" },
+  { name: "Supabase", icon: SiSupabase, x: "72%", y: "75%" },
+  { name: "Firebase", icon: SiFirebase, x: "58%", y: "15%" },
+  { name: "Vercel", icon: SiVercel, x: "18%", y: "60%" },
+  { name: "Netlify", icon: SiNetlify, x: "82%", y: "85%" },
+  { name: "Docker", icon: SiDocker, x: "45%", y: "50%" },
+  { name: "Git", icon: SiGit, x: "10%", y: "25%" },
+  { name: "GitHub", icon: SiGithub, x: "90%", y: "10%" },
+  { name: "SEO Optimization", icon: SiGoogle, x: "55%", y: "80%" },
+  { name: "Web Performance", icon: SiSpeedtest, x: "38%", y: "40%" }
+];
 
-const TechBadge = ({ icon: Icon, name, color }) => {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -5 }}
-      className="group relative flex items-center gap-4 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm transition-colors hover:border-[#f5c400]/50"
-    >
-      <div className="text-4xl text-white group-hover:text-[#f5c400] transition-colors">
-        <Icon />
-      </div>
-      <div>
-        <h4 className="text-white font-bold tracking-tight">{name}</h4>
-        <div className="h-0.5 w-0 bg-[#f5c400] group-hover:w-full transition-all duration-300" />
-      </div>
-    </motion.div>
-  );
-};
-
-const TechStack = () => {
-  const containerRef = useRef(null);
-  const titleRef = useRef(null);
-
-  const categories = [
-  {
-    title: "Frontend",
-    techs: [
-      { name: "Next.js", icon: SiNextdotjs },
-      { name: "React", icon: SiReact },
-      { name: "TypeScript", icon: SiTypescript },
-      { name: "JavaScript (ES6+)", icon: SiJavascript },
-      { name: "HTML5", icon: SiHtml5 },
-      { name: "CSS3", icon: SiCss3 },
-      { name: "Tailwind CSS", icon: SiTailwindcss }
-    ]
-  },
-  {
-    title: "Motion, UI & 3D",
-    techs: [
-      { name: "GSAP", icon: SiGreensock },
-      { name: "Framer Motion", icon: SiFramer },
-      { name: "Lenis", icon: SiSimpleicons }
-    ]
-  },
-  {
-    title: "Backend",
-    techs: [
-      { name: "Node.js", icon: SiNodedotjs },
-      { name: "Express.js", icon: SiExpress },
-      { name: "REST APIs", icon: SiPostman }
-    ]
-  },
-  {
-    title: "Database & Auth",
-    techs: [
-      { name: "MongoDB", icon: SiMongodb },
-      { name: "Supabase", icon: SiSupabase },
-      { name: "Firebase", icon: SiFirebase }
-    ]
-  },
-  {
-    title: "DevOps & Hosting",
-    techs: [
-      { name: "Vercel", icon: SiVercel },
-      { name: "Netlify", icon: SiNetlify },
-      { name: "Docker", icon: SiDocker }
-    ]
-  },
-  {
-    title: "Tools & Workflow",
-    techs: [
-      { name: "Git", icon: SiGit },
-      { name: "GitHub", icon: SiGithub },
-    ]
-  },
-  {
-    title: "Performance & Quality",
-    techs: [
-      { name: "SEO Optimization", icon: SiGoogle },
-      { name: "Web Performance", icon: SiSpeedtest },
-    ]
-  }
-]
-
+const FloatingTechIcon = ({ tech, index }) => {
+  const iconRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const Icon = tech.icon;
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Reveal title
-      gsap.from(".tech-title span", {
-        y: 100,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 1,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: titleRef.current,
-          start: "top 80%",
-        }
-      });
+    if (!iconRef.current) return;
 
-      // Reveal cards
-      gsap.from(".tech-card", {
-        y: 60,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".tech-grid",
-          start: "top 75%",
-        }
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
+    // Premium floating animation
+    gsap.to(iconRef.current, {
+      y: Math.sin(index) * 30,
+      x: Math.cos(index) * 30,
+      duration: 5 + (index % 3),
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+  }, [index]);
 
   return (
-    <section 
-      ref={containerRef}
-      className="relative w-full min-h-screen bg-[#050505] py-24 px-6 md:px-12 lg:px-24 overflow-hidden"
+    <div
+      ref={iconRef}
+      className="absolute"
+      style={{ left: tech.x, top: tech.y }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#f5c400]/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#f5c400]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.05 }}
+        whileHover={{ scale: 1.2 }}
+        className={`flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full cursor-pointer transition-all duration-300 relative ${
+          isHovered
+            ? 'bg-[#FFD400]/25 shadow-[0_0_40px_rgba(255,212,0,0.7)]'
+            : 'bg-white/8 backdrop-blur-sm'
+        }`}
+      >
+        {/* Static Ring Effect */}
+        <div className={`absolute inset-0 rounded-full border-2 transition-all duration-300 ${
+          isHovered
+            ? 'border-[#FFD400] shadow-[inset_0_0_20px_rgba(255,212,0,0.3)]'
+            : 'border-[#FFD400]/30'
+        }`} />
+        
+        {/* Rotating Ring */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 rounded-full border border-transparent border-t-[#FFD400] border-r-[#FFD400]/50"
+        />
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header Section */}
-        <div ref={titleRef} className="mb-20">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-[2px] bg-[#f5c400]" />
-            <span className="text-[#f5c400] font-mono text-sm tracking-[0.3em] uppercase">The Engine</span>
-          </div>
-          
-          <h2 className="tech-title text-6xl md:text-8xl font-black text-white leading-none tracking-tighter overflow-hidden">
-            <span className="inline-block">TECH</span> <br />
-            <span className="inline-block text-[#f5c400]">STACK</span>
-          </h2>
-        </div>
+        {/* Icon with rotation */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 8 + (index % 4), repeat: Infinity, ease: "linear" }}
+          className="relative z-10"
+        >
+          <Icon
+            size={32}
+            className={`transition-colors duration-300 ${
+              isHovered ? 'text-[#FFD400]' : 'text-white/80'
+            }`}
+          />
+        </motion.div>
+      </motion.div>
 
-        {/* Categories Grid */}
-        <div className="tech-grid space-y-20">
-          {categories.map((cat, idx) => (
-            <div key={idx} className="tech-card border-t border-white/10 pt-10">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                {/* Category Label */}
-                <div className="lg:col-span-3">
-                  <h3 className="text-white/40 font-mono text-xs uppercase tracking-[0.5em] mb-4">
-                    {cat.title}
-                  </h3>
-                </div>
-
-                {/* Tech Badges */}
-                <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {cat.techs.map((tech, tIdx) => (
-                    <TechBadge key={tIdx} name={tech.name} icon={tech.icon} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom Decorative Footer */}
-        <div className="mt-32 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-white/30 font-medium max-w-sm">
-            Always evolving with the latest industry standards to build 
-            <span className="text-white italic"> performant </span> and 
-            <span className="text-white"> scalable </span> digital products.
-          </p>
-          <motion.div 
-            whileHover={{ scale: 1.1 }}
-            className="w-20 h-20 rounded-full border border-[#f5c400]/50 flex items-center justify-center relative cursor-help"
+      {/* Tooltip */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#0A0A0A]/90 border border-[#FFD400]/40 rounded-lg whitespace-nowrap pointer-events-none z-50"
           >
-            <div className="absolute inset-0 rounded-full border border-[#f5c400] animate-ping opacity-20" />
-            <span className="text-[#f5c400] font-bold text-xs uppercase tracking-tighter">Stack</span>
+            <p className="text-white text-xs font-medium">{tech.name}</p>
           </motion.div>
-        </div>
-      </div>
-    </section>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
-export default TechStack;
+export default function TechStackSection() {
+  return (
+    <section className="relative w-full h-screen bg-[#0A0A0A] overflow-hidden flex items-center justify-center selection:bg-[#FFD400] selection:text-black font-sans">
+      
+      {/* Background Glows */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.04, 0.08, 0.04]
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-[#FFD400] rounded-full blur-[150px]"
+        />
+      </div>
+
+      {/* Floating Particles */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        {[...Array(25)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{ 
+              y: [0, -120, 0],
+              x: [0, Math.random() * 60 - 30, 0],
+              opacity: [0.1, 0.5, 0.1]
+            }}
+            transition={{ 
+              duration: 10 + Math.random() * 5, 
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.2
+            }}
+            className="absolute w-1 h-1 bg-[#FFD400] rounded-full"
+            style={{ 
+              left: `${Math.random() * 100}%`, 
+              top: `${Math.random() * 100}%` 
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Floating Tech Icons */}
+      <div className="absolute inset-0 pointer-events-auto">
+        {ALL_TECHS.map((tech, index) => (
+          <FloatingTechIcon key={index} tech={tech} index={index} />
+        ))}
+      </div>
+
+      {/* Center Content */}
+      <div className="relative z-20 text-center px-6 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-[#FFD400] text-xs md:text-sm font-bold tracking-[0.3em] uppercase mb-4">
+            Technical Stack
+          </h2>
+          <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-6">
+            TECH I <span className="text-transparent" style={{ WebkitTextStroke: '1px #FFD400' }}>BREATHE</span>
+          </h1>
+          <p className="text-white/50 text-sm md:text-base font-medium max-w-2xl mx-auto leading-relaxed">
+            Crafting immersive digital experiences through high-performance code and fluid motion design.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Bottom Vignette */}
+      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#0A0A0A] to-transparent z-10 pointer-events-none" />
+    </section>
+  );
+}
