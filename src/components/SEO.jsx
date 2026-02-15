@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 const SEO = ({ 
   title = 'Atif Afsar - Full Stack Developer & Creative Engineer',
   description = 'Award-winning full stack developer specializing in React, Next.js, and high-performance web experiences.',
-  image = '/public/hero.png',
+  image = '/hero.png',
   url = 'https://atifafsar.com',
   type = 'website'
 }) => {
