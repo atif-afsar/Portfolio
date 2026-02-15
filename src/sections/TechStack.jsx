@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { gsap } from 'gsap';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { 
   SiNextdotjs, SiReact, SiTypescript, SiJavascript, SiHtml5, SiCss3, SiTailwindcss,
   SiGreensock, SiFramer, SiSimpleicons,
@@ -11,187 +10,183 @@ import {
   SiGoogle, SiSpeedtest
 } from 'react-icons/si';
 
-// All techs with floating positions
+/* ============================================================
+   RESPONSIVE TECH STACK CONFIG
+   - Dynamic coordinates: Desktop (Absolute) vs Mobile (Grid)
+   ============================================================ */
+
 const ALL_TECHS = [
-  { name: "Next.js", icon: SiNextdotjs, x: "8%", y: "15%" },
-  { name: "React", icon: SiReact, x: "15%", y: "35%" },
-  { name: "TypeScript", icon: SiTypescript, x: "22%", y: "55%" },
-  { name: "JavaScript (ES6+)", icon: SiJavascript, x: "12%", y: "75%" },
-  { name: "HTML5", icon: SiHtml5, x: "78%", y: "20%" },
-  { name: "CSS3", icon: SiCss3, x: "85%", y: "40%" },
-  { name: "Tailwind CSS", icon: SiTailwindcss, x: "88%", y: "65%" },
-  { name: "GSAP", icon: SiGreensock, x: "5%", y: "45%" },
-  { name: "Framer Motion", icon: SiFramer, x: "92%", y: "50%" },
-  { name: "Lenis", icon: SiSimpleicons, x: "50%", y: "10%" },
-  { name: "Node.js", icon: SiNodedotjs, x: "35%", y: "25%" },
-  { name: "Express.js", icon: SiExpress, x: "65%", y: "30%" },
-  { name: "REST APIs", icon: SiPostman, x: "42%", y: "70%" },
-  { name: "MongoDB", icon: SiMongodb, x: "28%", y: "85%" },
-  { name: "Supabase", icon: SiSupabase, x: "72%", y: "75%" },
-  { name: "Firebase", icon: SiFirebase, x: "58%", y: "15%" },
-  { name: "Vercel", icon: SiVercel, x: "18%", y: "60%" },
-  { name: "Netlify", icon: SiNetlify, x: "82%", y: "85%" },
-  { name: "Docker", icon: SiDocker, x: "45%", y: "50%" },
-  { name: "Git", icon: SiGit, x: "10%", y: "25%" },
-  { name: "GitHub", icon: SiGithub, x: "90%", y: "10%" },
-  { name: "SEO Optimization", icon: SiGoogle, x: "55%", y: "80%" },
-  { name: "Web Performance", icon: SiSpeedtest, x: "38%", y: "40%" }
+  { name: "Next.js", icon: SiNextdotjs, x: "8%", y: "15%", delay: 0 },
+  { name: "React", icon: SiReact, x: "15%", y: "35%", delay: 0.05 },
+  { name: "TypeScript", icon: SiTypescript, x: "22%", y: "55%", delay: 0.1 },
+  { name: "JavaScript", icon: SiJavascript, x: "12%", y: "75%", delay: 0.15 },
+  { name: "HTML5", icon: SiHtml5, x: "78%", y: "20%", delay: 0.2 },
+  { name: "CSS3", icon: SiCss3, x: "85%", y: "40%", delay: 0.25 },
+  { name: "Tailwind", icon: SiTailwindcss, x: "88%", y: "65%", delay: 0.3 },
+  { name: "GSAP", icon: SiGreensock, x: "5%", y: "45%", delay: 0.35 },
+  { name: "Framer", icon: SiFramer, x: "92%", y: "50%", delay: 0.4 },
+  { name: "Lenis", icon: SiSimpleicons, x: "50%", y: "8%", delay: 0.45 },
+  { name: "Node.js", icon: SiNodedotjs, x: "32%", y: "22%", delay: 0.5 },
+  { name: "Express", icon: SiExpress, x: "68%", y: "28%", delay: 0.55 },
+  { name: "REST API", icon: SiPostman, x: "42%", y: "75%", delay: 0.6 },
+  { name: "MongoDB", icon: SiMongodb, x: "28%", y: "85%", delay: 0.65 },
+  { name: "Supabase", icon: SiSupabase, x: "72%", y: "80%", delay: 0.7 },
+  { name: "Firebase", icon: SiFirebase, x: "58%", y: "15%", delay: 0.75 },
+  { name: "Vercel", icon: SiVercel, x: "18%", y: "60%", delay: 0.8 },
+  { name: "Netlify", icon: SiNetlify, x: "82%", y: "88%", delay: 0.85 },
+  { name: "Docker", icon: SiDocker, x: "45%", y: "50%", delay: 0.9 },
+  { name: "Git", icon: SiGit, x: "10%", y: "25%", delay: 0.95 },
+  { name: "GitHub", icon: SiGithub, x: "90%", y: "12%", delay: 1.0 },
+  { name: "SEO", icon: SiGoogle, x: "58%", y: "85%", delay: 1.05 },
+  { name: "Performance", icon: SiSpeedtest, x: "38%", y: "42%", delay: 1.1 }
 ];
 
-const FloatingTechIcon = ({ tech, index }) => {
-  const iconRef = useRef(null);
+const FloatingTechIcon = ({ tech, index, isMobile }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const Icon = tech.icon;
 
-  useEffect(() => {
-    if (!iconRef.current) return;
-
-    // Premium floating animation
-    gsap.to(iconRef.current, {
-      y: Math.sin(index) * 30,
-      x: Math.cos(index) * 30,
-      duration: 5 + (index % 3),
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-  }, [index]);
+  const animationDuration = useMemo(() => 5 + (index % 3), [index]);
+  const floatY = useMemo(() => Math.sin(index) * 15, [index]);
 
   return (
-    <div
-      ref={iconRef}
-      className="absolute"
-      style={{ left: tech.x, top: tech.y }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <motion.div
+      className={isMobile ? "relative" : "absolute"}
+      style={!isMobile ? { left: tech.x, top: tech.y } : {}}
+      initial={{ scale: 0, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      viewport={{ once: true }}
+      animate={!isMobile && !prefersReducedMotion ? {
+        y: [0, floatY, 0],
+      } : {}}
+      transition={{ 
+        scale: { duration: 0.4, delay: isMobile ? index * 0.05 : tech.delay },
+        y: { duration: animationDuration, repeat: Infinity, ease: "easeInOut" }
+      }}
     >
-      <motion.div
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1, rotate: 0 }}
-        transition={{ duration: 0.6, delay: index * 0.05 }}
-        whileHover={{ scale: 1.2 }}
-        className={`flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full cursor-pointer transition-all duration-300 relative ${
-          isHovered
-            ? 'bg-[#FFD400]/25 shadow-[0_0_40px_rgba(255,212,0,0.7)]'
-            : 'bg-white/8 backdrop-blur-sm'
-        }`}
+      <div 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="relative group"
       >
-        {/* Static Ring Effect */}
-        <div className={`absolute inset-0 rounded-full border-2 transition-all duration-300 ${
-          isHovered
-            ? 'border-[#FFD400] shadow-[inset_0_0_20px_rgba(255,212,0,0.3)]'
-            : 'border-[#FFD400]/30'
-        }`} />
-        
-        {/* Rotating Ring */}
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-          className="absolute inset-0 rounded-full border border-transparent border-t-[#FFD400] border-r-[#FFD400]/50"
-        />
-
-        {/* Icon with rotation */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 8 + (index % 4), repeat: Infinity, ease: "linear" }}
-          className="relative z-10"
+          whileHover={{ scale: 1.1, y: -5 }}
+          className={`flex items-center justify-center w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-2xl cursor-pointer transition-all duration-500 border-2 ${
+            isHovered 
+            ? 'bg-[#FFD400]/20 border-[#FFD400] shadow-[0_0_30px_rgba(255,212,0,0.3)]' 
+            : 'bg-white/5 border-white/10 backdrop-blur-md'
+          }`}
         >
-          <Icon
-            size={32}
-            className={`transition-colors duration-300 ${
-              isHovered ? 'text-[#FFD400]' : 'text-white/80'
-            }`}
-          />
+          <Icon size={24} className={isHovered ? 'text-[#FFD400]' : 'text-white/50'} />
         </motion.div>
-      </motion.div>
 
-      {/* Tooltip */}
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#0A0A0A]/90 border border-[#FFD400]/40 rounded-lg whitespace-nowrap pointer-events-none z-50"
-          >
-            <p className="text-white text-xs font-medium">{tech.name}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute -bottom-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#FFD400] text-black text-[10px] font-black uppercase tracking-tighter rounded z-50 pointer-events-none"
+            >
+              {tech.name}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
 
 export default function TechStackSection() {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
-    <section className="relative w-full h-screen bg-[#0A0A0A] overflow-hidden flex items-center justify-center selection:bg-[#FFD400] selection:text-black font-sans">
+    <section className="relative w-full min-h-screen bg-[#0A0A0A] overflow-hidden py-20 flex flex-col items-center justify-center">
       
-      {/* Background Glows */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.04, 0.08, 0.04]
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-[#FFD400] rounded-full blur-[150px]"
+      {/* Background UI elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#FFD400] opacity-[0.03] blur-[150px] rounded-full" />
+        <div className="absolute inset-0 opacity-[0.03]" 
+             style={{ backgroundImage: 'radial-gradient(#FFD400 0.5px, transparent 0.5px)', backgroundSize: '30px 30px' }} 
         />
       </div>
 
-      {/* Floating Particles */}
-      <div className="absolute inset-0 pointer-events-none opacity-20">
-        {[...Array(25)].map((_, i) => (
-          <motion.div
-            key={i}
-            animate={{ 
-              y: [0, -120, 0],
-              x: [0, Math.random() * 60 - 30, 0],
-              opacity: [0.1, 0.5, 0.1]
-            }}
-            transition={{ 
-              duration: 10 + Math.random() * 5, 
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.2
-            }}
-            className="absolute w-1 h-1 bg-[#FFD400] rounded-full"
-            style={{ 
-              left: `${Math.random() * 100}%`, 
-              top: `${Math.random() * 100}%` 
-            }}
-          />
-        ))}
-      </div>
+      <div className="container mx-auto px-6 relative z-30 pointer-events-none">
+        <div className="text-center max-w-4xl mx-auto">
+          <motion.span 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="text-[#FFD400] text-[10px] md:text-xs font-black tracking-[0.5em] uppercase border border-[#FFD400]/30 px-4 py-2 rounded-full inline-block mb-8"
+          >
+            Technical Arsenal
+          </motion.span>
 
-      {/* Floating Tech Icons */}
-      <div className="absolute inset-0 pointer-events-auto">
-        {ALL_TECHS.map((tech, index) => (
-          <FloatingTechIcon key={index} tech={tech} index={index} />
-        ))}
-      </div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-6xl md:text-8xl lg:text-9xl font-black text-white tracking-tighter leading-none mb-6"
+          >
+            TECH I <span className="text-transparent" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.3)' }}>MASTER</span>
+          </motion.h1>
 
-      {/* Center Content */}
-      <div className="relative z-20 text-center px-6 pointer-events-none">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <h2 className="text-[#FFD400] text-xs md:text-sm font-bold tracking-[0.3em] uppercase mb-4">
-            Technical Stack
-          </h2>
-          <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-6">
-            TECH I <span className="text-transparent" style={{ WebkitTextStroke: '1px #FFD400' }}>BREATHE</span>
-          </h1>
-          <p className="text-white/50 text-sm md:text-base font-medium max-w-2xl mx-auto leading-relaxed">
-            Crafting immersive digital experiences through high-performance code and fluid motion design.
+          <p className="text-white/40 text-sm md:text-lg max-w-xl mx-auto font-medium leading-relaxed mb-12">
+            A curated selection of technologies I use to build world-class digital products. 
+            Focused on performance, scalability, and user experience.
           </p>
-        </motion.div>
+
+          <div className="flex justify-center gap-8 md:gap-16">
+            {[
+              { label: 'Tech Stack', value: '23+' },
+              { label: 'Experience', value: '2Y+' },
+              { label: 'Performance', value: '99' }
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl md:text-4xl font-black text-[#FFD400]">{stat.value}</div>
+                <div className="text-[10px] uppercase tracking-widest text-white/30 font-bold">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Bottom Vignette */}
-      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#0A0A0A] to-transparent z-10 pointer-events-none" />
+      {/* Responsive Icon Container */}
+      {isMobile ? (
+        /* MOBILE GRID: structured and clean */
+        <div className="container mx-auto px-6 mt-16 z-40">
+          <motion.p 
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center text-white/50 text-xs md:text-sm font-medium mb-8 tracking-wide"
+          >
+            Tap icons to see tech names
+          </motion.p>
+          <div className="grid grid-cols-4 sm:grid-cols-6 gap-4 md:gap-6 justify-items-center">
+            {ALL_TECHS.map((tech, index) => (
+              <FloatingTechIcon key={tech.name} tech={tech} index={index} isMobile={true} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        /* DESKTOP FLOATING: Premium scattered look */
+        <div className="absolute inset-0 z-10">
+          {ALL_TECHS.map((tech, index) => (
+            <FloatingTechIcon key={tech.name} tech={tech} index={index} isMobile={false} />
+          ))}
+        </div>
+      )}
+
+      {/* Footer Visual */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-none opacity-20 hidden lg:block">
+        <div className="text-[10px] text-white tracking-[0.3em] uppercase mb-4">Interactive Environment</div>
+        <div className="w-px h-16 bg-gradient-to-b from-[#FFD400] to-transparent mx-auto" />
+      </div>
     </section>
   );
 }

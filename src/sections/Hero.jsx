@@ -1,403 +1,281 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { useParallax } from "../hooks/useParallax";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 
-// Floating Button Component
+// Premium Floating Button with Tooltip - Circular yellow background
 const FloatingButton = ({ button, index }) => {
   return (
-    <motion.button
-      onClick={button.onClick}
-      className="relative w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center cursor-pointer z-50 backdrop-blur-sm border border-yellow-300/20"
-      initial={{ opacity: 0, scale: 0, rotate: -180 }}
-      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-      transition={{
-        delay: 0.6 + index * 0.1,
-        type: "spring",
-        stiffness: 200,
-        damping: 15,
-      }}
-      whileHover={{
-        scale: 1.15,
-        rotate: 5,
-        background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
-        boxShadow: "0 8px 25px rgba(251, 191, 36, 0.4)",
-        transition: { duration: 0.2, ease: "easeOut" },
-      }}
-      whileTap={{ scale: 0.9, rotate: -5 }}
-      style={{
-        boxShadow: "0 4px 15px rgba(251, 191, 36, 0.2)",
-      }}
-    >
-      <motion.div
-        className="relative z-10 text-black drop-shadow-sm"
-        whileHover={{ rotate: 360, scale: 1.1 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
+    <motion.div className="relative group">
+      <motion.button
+        onClick={button.onClick}
+        className="relative w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 bg-yellow-400 hover:bg-yellow-300 rounded-full flex items-center justify-center cursor-pointer z-50 transition-all duration-300 shadow-lg shadow-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/60"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.8 + index * 0.1 }}
+        whileHover={{ scale: 1.15, y: -2 }}
+        whileTap={{ scale: 0.9 }}
       >
-        {button.icon}
-      </motion.div>
+        <div className="text-black transition-colors duration-300 flex items-center justify-center w-full h-full">
+          {button.icon}
+        </div>
+      </motion.button>
       
-      {/* Subtle inner glow */}
-      <div 
-        className="absolute inset-0 rounded-full opacity-50 pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3) 0%, transparent 60%)',
-        }}
-      />
-    </motion.button>
+      {/* Tooltip - Hidden on mobile, visible on hover on desktop */}
+      <span className="hidden sm:block absolute right-12 sm:right-14 lg:right-16 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-black/90 backdrop-blur-sm text-white text-[10px] sm:text-xs font-bold rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none uppercase tracking-widest whitespace-nowrap shadow-xl border border-white/10">
+        {button.label}
+      </span>
+    </motion.div>
   );
 };
 
 const Hero = () => {
   const containerRef = useRef(null);
-  const imageRef = useRef(null);
-  const backgroundRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
   
-  // Parallax effects with different speeds for layered depth
-  const backgroundY = useParallax(backgroundRef, 50);
-  const imageY = useParallax(imageRef, 30);
-  
-  // Additional scroll-based transforms for more complex parallax
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"]
+    offset: ["start start", "end start"]
   });
-  
-  const backgroundScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-  const floatingButtonsY = useTransform(scrollYProgress, [0, 1], [0, -20]);
-  const overlayOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 0.4, 0.1]);
 
-  // Scroll to about section
-  const scrollToAbout = () => {
-    const aboutSection = document.querySelector('[data-section="about"]');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
+  // Smoother Spring Parallax - only on desktop
+  const smoothY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 200]), {
+    stiffness: 100,
+    damping: 30
+  });
+
+  const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  const textScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95]);
+
+  // Handle navigation
+  const handleNavigation = (sectionId) => {
+    if (sectionId === "home") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const section = document.querySelector(`[data-section="${sectionId}"]`);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
-  // Scroll to projects section
-  const scrollToProjects = () => {
-    const projectsSection = document.querySelector('[data-section="projects"]');
-    if (projectsSection) {
-      projectsSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // Scroll to contact section
-  const scrollToContact = () => {
-    const contactSection = document.querySelector('[data-section="contact"]');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // Floating button icons (SVG) - white icons for yellow background
   const floatingButtons = [
-    {
-      id: "home",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-      ),
-      label: "Home",
-      onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }),
-    },
-    {
-      id: "profile",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
-      ),
-      label: "About",
-      onClick: scrollToAbout,
-    },
-    {
-      id: "projects",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-        </svg>
-      ),
-      label: "Projects",
-      onClick: scrollToProjects,
-    },
-    {
-      id: "portfolio",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-          <line x1="8" y1="21" x2="16" y2="21" />
-          <line x1="12" y1="17" x2="12" y2="21" />
-        </svg>
-      ),
-      label: "Portfolio",
-      onClick: scrollToProjects,
-    },
-    {
-      id: "contact",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-          <polyline points="22,6 12,13 2,6" />
-        </svg>
-      ),
-      label: "Contact",
-      onClick: scrollToContact,
-    },
-    {
-      id: "send",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13" />
-          <polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
-      ),
-      label: "Send",
-      onClick: scrollToContact,
-    },
+    { id: "home", label: "Home", icon: <HomeIcon />, onClick: () => handleNavigation("home") },
+    { id: "projects", label: "Work", icon: <GridIcon />, onClick: () => handleNavigation("projects") },
+    { id: "contact", label: "Contact", icon: <MailIcon />, onClick: () => handleNavigation("contact") },
   ];
 
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center overflow-hidden z-10 ml-16"
+      className="relative min-h-screen w-full flex items-center overflow-hidden bg-[#0a0a0a] text-white selection:bg-yellow-400 selection:text-black"
     >
-      {/* Parallax Background Elements */}
-      <motion.div
-        ref={backgroundRef}
-        className="absolute inset-0 pointer-events-none"
-        style={{ y: backgroundY, scale: backgroundScale }}
-      >
-        {/* Subtle geometric shapes for parallax */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/5 rounded-full blur-xl" />
-        <div className="absolute top-40 right-20 w-24 h-24 bg-yellow-400/8 rounded-full blur-lg" />
-        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-yellow-400/3 rounded-full blur-2xl" />
+      {/* Enhanced Background Decorative Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] sm:w-[40%] h-[60%] sm:h-[40%] bg-yellow-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] sm:w-[40%] h-[60%] sm:h-[40%] bg-yellow-500/5 rounded-full blur-[120px]" />
         
-        {/* Subtle grid pattern */}
+        {/* Grid Pattern Overlay - More subtle on mobile */}
         <div 
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.02] sm:opacity-[0.03]"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+              linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
             `,
-            backgroundSize: '40px 40px'
+            backgroundSize: '50px 50px'
           }}
         />
-      </motion.div>
-      
-      <div className="w-full h-screen relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
-          {/* Left Side - Text Content (50%) - White Background */}
-          <motion.div
-            className="flex flex-col space-y-6 lg:space-y-8 bg-white px-6 md:px-12 lg:px-20 xl:px-24 justify-center relative"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      </div>
+
+      <div className="container mx-auto px-5 sm:px-6 md:px-12 lg:px-20 z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 items-center min-h-screen py-20 sm:py-24 lg:py-0">
+          
+          {/* Left Content (Column 1-7) */}
+          <motion.div 
+            className="lg:col-span-7 flex flex-col items-start justify-center order-1 lg:order-1"
+            style={{ 
+              opacity: isMobile ? 1 : textOpacity, 
+              scale: isMobile ? 1 : textScale 
+            }}
           >
-            {/* Subtle parallax background elements for text side */}
             <motion.div
-              className="absolute inset-0 pointer-events-none overflow-hidden"
-              style={{ y: useTransform(scrollYProgress, [0, 1], [0, 25]) }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6"
             >
-              <div className="absolute top-16 left-8 w-24 h-24 bg-yellow-400/3 rounded-full blur-xl" />
-              <div className="absolute bottom-20 right-12 w-32 h-32 bg-yellow-400/2 rounded-full blur-2xl" />
-              <div className="absolute top-1/2 left-4 w-16 h-16 bg-yellow-400/4 rounded-full blur-lg" />
+              <motion.span 
+                className="h-[1px] w-6 sm:w-8 bg-yellow-400"
+                initial={{ width: 0 }}
+                animate={{ width: "2rem" }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              />
+              <span className="text-yellow-400 font-mono text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.3em] uppercase font-medium">
+                Available for Projects
+              </span>
             </motion.div>
-            
-            {/* Content with subtle parallax offset */}
-            <motion.div
-              className="relative z-10"
-              style={{ y: useTransform(scrollYProgress, [0, 1], [0, -15]) }}
+
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-[2.5rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-semibold sm:font-medium sm:leading-[0.9] tracking-tight sm:tracking-tighter mb-4 sm:mb-6 md:mb-8"
             >
-              {/* Intro Text */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.6 }}
-                className="text-base md:text-lg font-bold tracking-wider uppercase text-gray-600"
-                style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-              >
-                FULL-STACK DEVELOPER
-              </motion.p>
+              Building <span className="text-neutral-500 italic font-light">digital</span>
+              <br />
+              experiences<span className="text-yellow-400">.</span>
+            </motion.h1>
 
-              {/* Name with Accent Highlight */}
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-tight"
-                style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-              >
-                I'm{" "}
-                <span className="relative inline-block">
-                  <span className="relative z-10 text-black">Atif Afsar</span>
-                  <motion.span
-                    className="absolute bottom-2 left-0 right-0 h-4 bg-yellow-400 opacity-60 -z-0"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  />
-                </span>
-              </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-sm sm:text-base md:text-lg lg:text-xl text-neutral-400 max-w-lg mb-6 sm:mb-8 md:mb-10 leading-relaxed"
+            >
+              I'm <span className="text-white font-semibold">Atif Afsar</span>, a Full-Stack Developer 
+              specializing in building high-performance web applications with a focus on clean aesthetics.
+            </motion.p>
 
-              {/* Role Subtitle */}
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800"
-                style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-              >
-                Computer Science Engineer & Software Developer
-              </motion.h2>
-
-              {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl"
-                style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-              >
-                I craft cutting-edge web applications with React, Node.js, and JavaScript. 
-                Passionate about building scalable, interactive digital experiences that solve real-world problems.
-              </motion.p>
-
-              {/* Primary CTA Button */}
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                onClick={scrollToAbout}
-                className="self-start bg-gradient-to-r from-yellow-400 to-yellow-500 text-black px-8 py-4 md:px-10 md:py-5 text-base md:text-lg font-bold uppercase tracking-wider relative overflow-hidden group border border-yellow-300/20"
-                whileHover={{ 
-                  scale: 1.05, 
-                  y: -3,
-                  boxShadow: "0 10px 30px rgba(251, 191, 36, 0.3)",
-                  background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto"
+            >
+              <button 
+                onClick={() => {
+                  const projectsSection = document.querySelector('[data-section="projects"]');
+                  if (projectsSection) {
+                    projectsSection.scrollIntoView({ behavior: "smooth" });
+                  }
                 }}
-                whileTap={{ scale: 0.98, y: -1 }}
-                style={{ 
-                  fontFamily: "'Inter', system-ui, sans-serif",
-                  boxShadow: "0 4px 15px rgba(251, 191, 36, 0.2)",
-                }}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-yellow-400 text-black font-bold rounded-full hover:bg-yellow-300 transition-all active:scale-95 text-sm sm:text-base shadow-lg shadow-yellow-400/20 hover:shadow-xl hover:shadow-yellow-400/30"
               >
-                <span className="relative z-10 drop-shadow-sm">More About Me</span>
-                
-                {/* Animated background shine effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "100%" }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                View My Work
+              </button>
+              <button 
+                onClick={() => {
+                  const contactSection = document.querySelector('[data-section="contact"]');
+                  if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-bold rounded-full hover:bg-white/10 hover:border-white/20 transition-all text-sm sm:text-base"
+              >
+                Get in Touch
+              </button>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Image/Visuals (Column 8-12) */}
+          <div className="lg:col-span-5 relative flex justify-center lg:justify-end order-2 lg:order-2">
+            <motion.div 
+              style={{ y: !isMobile ? smoothY : 0 }}
+              className="relative w-full max-w-[240px] sm:max-w-[300px] md:max-w-[360px] lg:max-w-[450px]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              {/* Glowing Background Effect */}
+              <div className="absolute inset-0 bg-yellow-400/20 rounded-[2rem] sm:rounded-[2.5rem] blur-[60px] sm:blur-[80px] -z-10" />
+              
+              {/* Image Container with Enhanced Border */}
+              <div className="relative w-full aspect-[4/5] rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] overflow-hidden border border-white/20 bg-neutral-900 group shadow-2xl shadow-black/40">
+                <motion.img
+                  src="/hero.png"
+                  alt="Atif Afsar"
+                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 1 }}
                 />
                 
-                {/* Inner glow */}
-                <div 
-                  className="absolute inset-0 opacity-50 pointer-events-none"
+                {/* Enhanced Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                
+                {/* Animated Border Highlight */}
+                <motion.div 
+                  className="absolute inset-0 rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem]"
                   style={{
-                    background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.2) 0%, transparent 70%)',
+                    background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.3) 0%, transparent 50%, rgba(250, 204, 21, 0.3) 100%)',
+                    opacity: 0
+                  }}
+                  animate={{
+                    opacity: [0, 0.5, 0],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
                   }}
                 />
-              </motion.button>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Side - Image with Floating Buttons (50%) - Grey Background */}
-          <motion.div
-            className="relative flex justify-center lg:justify-end items-center h-full bg-gray-200"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Parallax Background Layer */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              style={{ y: backgroundY }}
-            >
-              {/* Subtle background shapes with parallax */}
-              <div className="absolute top-1/4 right-1/4 w-20 h-20 bg-yellow-400/10 rounded-full blur-lg" />
-              <div className="absolute bottom-1/3 right-1/3 w-16 h-16 bg-yellow-400/8 rounded-full blur-md" />
-              <div className="absolute top-1/2 right-1/6 w-12 h-12 bg-yellow-400/6 rounded-full blur-sm" />
-            </motion.div>
-            
-            <div className="relative w-full h-full flex items-center justify-end">
-              {/* Profile Image - Large to fill 50% area */}
-              <div className="relative z-0 w-full h-full flex items-center justify-end pr-4 lg:pr-8">
-                {/* Full Image - Sized to fill the grey area with parallax */}
-                <motion.div
-                  ref={imageRef}
-                  className="relative h-full w-auto max-w-full flex items-center justify-end"
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.4, duration: 0.8 }}
-                  style={{ y: imageY }}
-                >
-                  {/* Main Image with Premium Effects */}
-                  <motion.img
-                    src="/hero.png"
-                    alt="Atif Afsar"
-                    className="h-full w-auto max-w-full object-contain object-right relative z-10"
-                    style={{
-                      filter: 'contrast(1.1) brightness(1.05) saturate(0.9)',
-                    }}
-                    whileHover={{
-                      scale: 1.02,
-                      transition: { duration: 0.3, ease: "easeOut" }
-                    }}
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      const parent = e.target.parentElement;
-                      if (parent) {
-                        parent.innerHTML =
-                          '<div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-4xl font-black text-gray-400">PROFILE</div>';
-                      }
-                    }}
-                  />
-                  
-                  {/* Premium Gradient Overlay with parallax-responsive opacity */}
-                  <motion.div 
-                    className="absolute inset-0 pointer-events-none z-20"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 50%, rgba(255,193,7,0.08) 100%)',
-                      mixBlendMode: 'overlay',
-                      opacity: overlayOpacity,
-                    }}
-                  />
-                  
-                  {/* Subtle Glow Effect */}
-                  <div 
-                    className="absolute inset-0 pointer-events-none z-0 opacity-30"
-                    style={{
-                      background: 'radial-gradient(ellipse at center, rgba(255,193,7,0.15) 0%, transparent 70%)',
-                      filter: 'blur(20px)',
-                    }}
-                  />
-                </motion.div>
               </div>
 
-              {/* Floating Action Buttons - Vertical Stack on Right Side with parallax */}
-              <motion.div 
-                className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-50 pointer-events-auto"
-                style={{ y: floatingButtonsY }}
-              >
-                {floatingButtons.map((button, index) => (
-                  <FloatingButton key={button.id} button={button} index={index} />
+              {/* Floating Navigation Buttons - Improved Mobile Positioning */}
+              <div className="absolute -right-1.5 sm:-right-3 lg:-right-6 top-1/2 -translate-y-1/2 flex flex-col gap-1.5 sm:gap-2 lg:gap-4">
+                {floatingButtons.map((btn, i) => (
+                  <FloatingButton key={btn.id} button={btn} index={i} />
                 ))}
-              </motion.div>
-            </div>
-          </motion.div>
+              </div>
+
+              {/* Decorative Corner Accent - Hidden on smallest mobile */}
+              <motion.div 
+                className="hidden xs:block absolute -bottom-4 -left-4 w-24 h-24 sm:w-32 sm:h-32 border-l-2 border-b-2 border-yellow-400/30 rounded-bl-3xl"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 1 }}
+              />
+            </motion.div>
+          </div>
+
         </div>
       </div>
+      
+      {/* Enhanced Scroll Indicator */}
+      <motion.div 
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      >
+        <span className="text-[10px] sm:text-xs text-neutral-500 uppercase tracking-widest font-mono">Scroll</span>
+        <div className="w-[1px] h-10 sm:h-12 bg-gradient-to-b from-yellow-400 via-yellow-400/50 to-transparent" />
+      </motion.div>
     </section>
   );
 };
+
+// Premium Minimal Icons - Sleek and sophisticated
+const HomeIcon = () => (
+  <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    <polyline points="9 22 9 12 15 12 15 22"/>
+  </svg>
+);
+
+const GridIcon = () => (
+  <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7"/>
+    <rect x="14" y="3" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/>
+    <rect x="3" y="14" width="7" height="7"/>
+  </svg>
+);
+
+const MailIcon = () => (
+  <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="16" rx="2"/>
+    <path d="M22 7l-10 5L2 7"/>
+  </svg>
+);
 
 export default Hero;

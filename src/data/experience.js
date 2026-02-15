@@ -1,8 +1,21 @@
 export const experience = [
   {
+    role: "Senior Web Developer (Onsite)",
+    company: "The BrandsWay | PR & Marketing Agency",
+    duration: "Feb 15, 2026 – Present",
+    type: "work",
+    points: [
+      "Leading frontend and backend development for client projects",
+      "Building scalable APIs and server-side solutions",
+      "Mentoring junior developers and overseeing code quality standards",
+      "Optimizing web performance and implementing best practices",
+      "Collaborating with design and marketing teams on strategic initiatives",
+    ],
+  },
+  {
     role: "Web Developer Intern (Onsite)",
     company: "The BrandsWay | PR & Marketing Agency",
-    duration: "Nov 2025 – Present",
+    duration: "Nov 2025 – Feb 15, 2026",
     type: "internship",
     points: [
       "Built and maintained responsive, performance-optimized client websites",

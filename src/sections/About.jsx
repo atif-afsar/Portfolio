@@ -55,6 +55,7 @@ const AboutSection = () => {
   return (
     <section 
       ref={containerRef}
+      data-section="about"
       className="relative w-full bg-black text-white"
       style={{ height: '350vh' }}
     >

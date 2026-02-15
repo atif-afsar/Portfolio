@@ -3,8 +3,8 @@ import { gsap } from 'gsap';
 
 const Loader = ({ onComplete }) => {
   const containerRef = useRef(null);
-  const svgRef = useRef(null);
-  const pathRef = useRef(null);
+  const textRef = useRef(null);
+  const subtextRef = useRef(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -16,42 +16,58 @@ const Loader = ({ onComplete }) => {
       }
     });
 
-    const pathLength = pathRef.current.getTotalLength();
-
-    // Prepare the path for the drawing animation
-    gsap.set(pathRef.current, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: pathLength,
-      opacity: 1
-    });
-
-    tl.to({}, { duration: 0.5 }) // Initial pause
-      // The "Writing" animation
-      .to(pathRef.current, {
-        strokeDashoffset: 0,
-        duration: 2.2, // Slightly slower for readability
-        ease: "power2.inOut"
-      })
-      // Cinematic scale and glow
-      .to(svgRef.current, {
-        scale: 1.08,
-        filter: "drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3))",
-        duration: 0.8,
+    // Split text into characters for animation
+    const chars = textRef.current.querySelectorAll('.char');
+    
+    // Optimized timeline - reduced from ~4.5s to ~2.5s
+    tl.to({}, { duration: 0.15 }) // Reduced initial pause
+      
+      // Animate characters in sequence with stagger (faster)
+      .fromTo(chars, 
+        {
+          opacity: 0,
+          y: 30,
+          rotationX: -60
+        },
+        {
+          opacity: 1,
+          y: 0,
+          rotationX: 0,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "back.out(1.5)"
+        }
+      )
+      
+      // Scale and glow effect (faster)
+      .to(textRef.current, {
+        scale: 1.02,
+        duration: 0.4,
         ease: "power2.out"
-      }, "-=0.4")
-      .to({}, { duration: 0.6 }) // Hold
-      // Slide reveal
+      }, "-=0.2")
+      
+      // Fade in subtext (faster)
+      .fromTo(subtextRef.current,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+        "-=0.3"
+      )
+      
+      .to({}, { duration: 0.2 }) // Reduced hold time
+      
+      // Exit animation - slide up (faster)
       .to(containerRef.current, {
         yPercent: -100,
-        duration: 1.2,
+        duration: 0.6,
         ease: "expo.inOut"
       })
-      .to(svgRef.current, {
+      
+      .to([textRef.current, subtextRef.current], {
         opacity: 0,
-        y: -60,
-        duration: 0.8,
+        y: -30,
+        duration: 0.4,
         ease: "power2.in"
-      }, "-=1.1");
+      }, "-=0.5");
 
     return () => {
       tl.kill();
@@ -59,38 +75,52 @@ const Loader = ({ onComplete }) => {
     };
   }, [onComplete]);
 
+  // Split text into individual characters
+  const renderText = (text) => {
+    return text.split('').map((char, index) => (
+      <span 
+        key={index} 
+        className="char inline-block"
+        style={{ display: 'inline-block' }}
+      >
+        {char === ' ' ? '\u00A0' : char}
+      </span>
+    ));
+  };
+
   return (
     <div 
       ref={containerRef}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-[#FFD400]"
     >
-      <div className="relative w-full max-w-[350px] md:max-w-[550px] px-10">
-        <svg 
-          ref={svgRef}
-          viewBox="0 0 500 200" 
-          fill="none" 
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto"
+      <div className="relative flex flex-col items-center gap-2 sm:gap-3 md:gap-4 px-4 sm:px-6">
+        {/* Main Text */}
+        <h1 
+          ref={textRef}
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A0A0A] tracking-tight leading-tight"
+          style={{ perspective: '1000px' }}
         >
-          {/* Handwritten Cursive "Atif" Path */}
-          <path
-            ref={pathRef}
-            d="M71,135 C71,135 94,36 110,36 C126,36 108,135 108,135 M85,90 L135,90 M170,135 L170,75 M155,75 L185,75 M210,135 L210,85 M210,65 L212,65 M240,135 L240,75 C240,75 240,55 260,55 C280,55 275,75 275,75 L275,135 M255,95 L295,95"
-            stroke="#0A0A0A"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <title>Atif</title>
-        </svg>
+          {renderText('I Am A Developer')}
+        </h1>
+        
+        {/* Subtext */}
+        <div 
+          ref={subtextRef}
+          className="flex items-center gap-2 sm:gap-3 opacity-0"
+        >
+          <div className="w-6 sm:w-8 md:w-12 h-[1.5px] sm:h-[2px] bg-[#0A0A0A]/40"></div>
+          <span className="text-[9px] sm:text-xs md:text-sm font-bold tracking-[0.2em] sm:tracking-[0.25em] md:tracking-[0.3em] text-[#0A0A0A]/60 uppercase whitespace-nowrap">
+            Atif Afsar
+          </span>
+          <div className="w-6 sm:w-8 md:w-12 h-[1.5px] sm:h-[2px] bg-[#0A0A0A]/40"></div>
+        </div>
       </div>
 
-      <div className="absolute bottom-10 left-10 overflow-hidden">
-        <div className="flex items-center gap-3">
-            <span className="text-[10px] font-black tracking-[0.4em] text-[#0A0A0A] uppercase opacity-60">
-                System.Auth / Atif Afsar
-            </span>
-        </div>
+      {/* Bottom corner text */}
+      <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-4 sm:left-6 md:left-8">
+        <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black tracking-[0.3em] sm:tracking-[0.35em] md:tracking-[0.4em] text-[#0A0A0A] uppercase opacity-40">
+          System.Init
+        </span>
       </div>
     </div>
   );
