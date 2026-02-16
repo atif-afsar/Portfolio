@@ -10,4 +10,5 @@ Disallow: /.kiro/
 Crawl-delay: 1
 
 # Sitemaps
+Sitemap: https://atifafsar.vercel.app/sitemap.xml
 Sitemap: https://atifafsar.com/sitemap.xml
