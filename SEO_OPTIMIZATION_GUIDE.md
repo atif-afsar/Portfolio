@@ -30,7 +30,7 @@ Your portfolio is now optimized to rank for "Atif Afsar" search queries.
 
 ### Step 1: Submit to Google Search Console (CRITICAL)
 1. Go to https://search.google.com/search-console
-2. Add your property (https://atifafsar.vercel.app)
+2. Add your property (https://portfolio-rgzt.vercel.app)
 3. Verify ownership (DNS or HTML file method)
 4. Submit sitemap.xml
 5. Request indexing for homepage
