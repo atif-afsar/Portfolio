@@ -1,7 +1,9 @@
 import { useState, useEffect, Suspense, lazy } from 'react'
+import { motion } from 'framer-motion'
 import Cursor from './components/layout/Cursor'
 import Sidebar from './components/layout/Sidebar'
 import Loader from './sections/Loader'
+import Chatbot from './components/Chatbot'
 
 // Lazy load heavy sections
 const Hero = lazy(() => import('./sections/Hero'))
@@ -76,6 +78,16 @@ const App = () => {
             <Contact />
           </Suspense>
         </div>
+      </div>
+      <div className="pointer-events-none">
+        <motion.div
+          className="pointer-events-auto"
+          initial={{ opacity: 0, translateY: 40 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <Chatbot />
+        </motion.div>
       </div>
     </>
   )

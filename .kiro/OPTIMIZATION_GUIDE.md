@@ -24,7 +24,14 @@
 - ✅ Canonical URL
 - ✅ Preload critical fonts
 - ✅ DNS prefetch for external resources
-- **Location**: `index.html`
+- **Location**: `index.html`I’m excited to share that I’ve successfully completed my internship and have officially received a **full-time Web Developer offer from Brandsway! 🚀**
+
+This journey has been an incredible learning experience where I strengthened my skills, worked on real projects, and grew both technically and professionally. I’m truly grateful to the entire Brandsway team for their guidance, support, and trust in my abilities.
+
+Looking forward to this new chapter, taking on bigger challenges, and continuing to build impactful digital experiences. 💻✨
+
+#Grateful #NewBeginnings #WebDeveloper #CareerGrowth
+
 - **Impact**: Better social sharing & search rankings
 
 ### 4. **Structured Data (JSON-LD)**
