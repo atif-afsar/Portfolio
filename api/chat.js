@@ -3,7 +3,7 @@ import { portfolioData } from "../src/data/portfolioData.js";
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 const MAX_RETRIES = 2;
-const TIMEOUT = 25000; // 25 seconds (Vercel limit is 30s)
+const TIMEOUT = 25000;
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -21,18 +21,19 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
 
   const { message } = req.body || {};
 
-  if (!message || message.trim() === "") {
-    return res.status(400).json({ error: "Message is required" });
+  if (!message || typeof message !== "string" || message.trim() === "") {
+    return res.status(400).json({ error: "Message is required and must be a string" });
   }
 
-  if (!process.env.GROQ_API_KEY) {
-    console.error("GROQ_API_KEY not configured");
-    return res.status(500).json({ error: "API configuration error" });
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    console.error("GROQ_API_KEY environment variable is not set");
+    return res.status(500).json({ error: "Server configuration error" });
   }
 
   try {
@@ -49,7 +50,7 @@ Guidelines:
 - Be friendly and engaging in your responses`;
 
     let lastError;
-    
+
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       try {
         const controller = new AbortController();
@@ -59,7 +60,7 @@ Guidelines:
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
             model: MODEL,
@@ -84,12 +85,12 @@ Guidelines:
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           lastError = `Groq API error: ${response.status} - ${errorData.error?.message || response.statusText}`;
-          
+
           if (response.status === 429 && attempt < MAX_RETRIES) {
             await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
             continue;
           }
-          
+
           return res.status(200).json({ reply: "AI is currently unavailable. Please try again later." });
         }
 
