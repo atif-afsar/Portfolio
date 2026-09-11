@@ -2,8 +2,55 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+function apiDevPlugin() {
+  return {
+    name: 'api-chat-dev-handler',
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (req.url === '/api/chat' && req.method === 'POST') {
+          let body = '';
+          req.on('data', (chunk) => {
+            body += chunk;
+          });
+          req.on('end', async () => {
+            try {
+              req.body = body ? JSON.parse(body) : {};
+            } catch {
+              req.body = {};
+            }
+
+            res.status = function (code) {
+              res.statusCode = code;
+              return res;
+            };
+            res.json = function (data) {
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(data));
+              return res;
+            };
+
+            try {
+              const chatModule = await server.ssrLoadModule('/api/chat.js');
+              await chatModule.default(req, res);
+            } catch (err) {
+              console.error('API dev handler error:', err);
+              if (!res.headersSent) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: err.message }));
+              }
+            }
+          });
+        } else {
+          next();
+        }
+      });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), apiDevPlugin()],
   build: {
     // Code splitting configuration
     rollupOptions: {

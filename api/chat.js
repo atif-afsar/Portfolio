@@ -1,7 +1,15 @@
+import "dotenv/config";
 import { portfolioData } from "../src/data/portfolioData.js";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.3-70b-versatile";
+const FALLBACK_MODELS = [
+  process.env.GROQ_MODEL,
+  "openai/gpt-oss-120b",
+  "qwen/qwen3.8-27b",
+  "openai/gpt-oss-20b",
+  "groq/compound-mini",
+].filter(Boolean);
+
 const MAX_RETRIES = 2;
 const TIMEOUT = 25000;
 
@@ -49,68 +57,77 @@ Guidelines:
 - Provide accurate information from the portfolio data
 - Be friendly and engaging in your responses`;
 
-    let lastError;
+    let lastError = null;
 
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
+    for (const model of FALLBACK_MODELS) {
+      let modelSucceeded = false;
 
-        const response = await fetch(GROQ_API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model: MODEL,
-            messages: [
-              {
-                role: "system",
-                content: systemPrompt,
-              },
-              {
-                role: "user",
-                content: message,
-              },
-            ],
-            temperature: 0.7,
-            max_tokens: 1024,
-          }),
-          signal: controller.signal,
-        });
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
 
-        clearTimeout(timeoutId);
+          const response = await fetch(GROQ_API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [
+                {
+                  role: "system",
+                  content: systemPrompt,
+                },
+                {
+                  role: "user",
+                  content: message,
+                },
+              ],
+              temperature: 0.7,
+              max_tokens: 1024,
+            }),
+            signal: controller.signal,
+          });
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          lastError = `Groq API error: ${response.status} - ${errorData.error?.message || response.statusText}`;
+          clearTimeout(timeoutId);
 
-          if (response.status === 429 && attempt < MAX_RETRIES) {
-            await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-            continue;
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            lastError = `Groq API error (${model}): ${response.status} - ${errorData.error?.message || response.statusText}`;
+            console.warn(lastError);
+
+            if (response.status === 429 && attempt < MAX_RETRIES) {
+              await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+              continue;
+            }
+
+            // If model is not found or failed, break inner retry loop to try next model in FALLBACK_MODELS
+            break;
           }
 
-          return res.status(200).json({ reply: "AI is currently unavailable. Please try again later." });
-        }
+          const data = await response.json();
 
-        const data = await response.json();
+          if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            lastError = `Groq API (${model}): Invalid response format`;
+            console.warn(lastError);
+            break;
+          }
 
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-          return res.status(200).json({ reply: "AI is currently unavailable. Please try again later." });
-        }
-
-        const aiResponse = data.choices[0].message.content;
-        return res.status(200).json({ reply: aiResponse });
-      } catch (error) {
-        lastError = error.message;
-        if (attempt < MAX_RETRIES) {
-          await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+          const aiResponse = data.choices[0].message.content;
+          return res.status(200).json({ reply: aiResponse });
+        } catch (error) {
+          lastError = error.message;
+          console.warn(`Groq request failed (${model}, attempt ${attempt + 1}):`, error.message);
+          if (attempt < MAX_RETRIES) {
+            await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+          }
         }
       }
     }
 
-    console.error("Chat API failed after retries:", lastError);
+    console.error("Chat API failed after trying all fallback models:", lastError);
     return res.status(200).json({ reply: "AI is currently unavailable. Please try again later." });
   } catch (error) {
     console.error("Chat API error:", error.message);
