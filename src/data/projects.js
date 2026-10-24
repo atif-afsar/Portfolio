@@ -2,6 +2,7 @@ export const projects = [
   
       {
     id: "08",
+    caseStudyId: "ims",
     title: "Islamic Mission School",
    description: "Built a full-featured admin panel using React, Tailwind CSS, and Supabase for dynamic data management. Integrated Web3Forms for form handling and deployed the platform using Vercel with domain configuration via GoDaddy, ensuring smooth performance and scalability.",
    tech: ["React", "Tailwind CSS", "Supabase", "Web3Forms", "Vercel", "GoDaddy"],
@@ -13,6 +14,7 @@ export const projects = [
   },
     {
     id: "04",
+    caseStudyId: "learnlogix",
     title: "LearnLogix Website",
     description: "A full-featured education platform with a responsive UI, NodeMailer email integration, and a custom admin panel for managing content and inquiries efficiently.",
     tech: ["React", "Node.js", "NodeMailer", "Admin Panel"],
@@ -23,6 +25,7 @@ export const projects = [
   },
   {
     id: "01",
+    caseStudyId: "ice",
     title: "Iceberg Website",
     description: "A premium ice cream parlor website featuring a visually rich UI, smooth interactions, and a fully responsive, customer-focused design with modern animations and optimized performance.",
     tech: ["HTML", "CSS", "JavaScript"],
@@ -33,6 +36,7 @@ export const projects = [
   },
   {
     id: "02",
+    caseStudyId: "hayat",
     title: "Hayat Eye Centre Website",
     description: "A professional healthcare website designed for a real client, featuring a clean responsive layout and a NodeMailer-powered contact system for handling patient inquiries.",
     tech: ["React", "Node.js", "NodeMailer", "Tailwind CSS"],
@@ -43,6 +47,7 @@ export const projects = [
   },
   {
     id: "03",
+    caseStudyId: "drift",
     title: "Drift Academy Website",
     description: "A modern academy website built with a clean, responsive design and well-structured sections to clearly present courses and information across all devices.",
     tech: ["React", "TailwindCSS", "Web3 forms", "JavaScript", "Responsive Design"],
@@ -54,6 +59,7 @@ export const projects = [
 
   {
     id: "05",
+    caseStudyId: "moody",
     title: "Moody Player - Mood-based Music Player",
     description: "Revolutionary mood-based music player using React, Node.js, Face API, MongoDB, and ImageKit. Detects user emotions through webcam to play personalized songs with seamless user data and playlists integration.",
     tech: ["React", "Node.js", "Face API", "MongoDB", "ImageKit"],
@@ -63,6 +69,7 @@ export const projects = [
   },
   {
     id: "06",
+    caseStudyId: "gpt",
     title: "Exact-GPT - AI Chatbot with Long-Term Memory",
     description: "Built a GPT-based chatbot with persistent memory using embeddings and Pinecone. Stores chat history in MongoDB for personalized interactions with advanced AI responses and real-time messaging.",
     tech: ["React", "Node.js", "OpenAI GPT", "Pinecone", "MongoDB", "Socket.io"],
@@ -72,6 +79,7 @@ export const projects = [
   },
   {
     id: "07",
+    caseStudyId: "nasa",
     title: "NASA Project - Rocket Launch Dashboard",
     description: "Built a React + Node.js dashboard to schedule and track rocket launches, storing launch history for reference. Created custom routes and APIs to manage missions, enhancing Node.js backend skills.",
     tech: ["React", "Node.js", "Express", "MongoDB", "NASA API"],
