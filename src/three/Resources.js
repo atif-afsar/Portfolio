@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { AudioLoader } from "three/examples/jsm/loaders/AudioLoader.js";
+import { AudioLoader } from "three/src/loaders/AudioLoader.js";
 import bus from "./EventBus.js";
 
 // Loads every entry in Sources.js. Emits progress via the bus; fires 'ready'.

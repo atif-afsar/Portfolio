@@ -1,44 +1,59 @@
+// Exactly the projects on the current resume (MarTech & Digital Growth
+// Developer), in the resume's order. Images live in /public (old .png shots)
+// or /public/projects (.webp shots).
 export const projects = [
-  
-      {
-    id: "08",
-    caseStudyId: "ims",
-    title: "Islamic Mission School",
-   description: "Built a full-featured admin panel using React, Tailwind CSS, and Supabase for dynamic data management. Integrated Web3Forms for form handling and deployed the platform using Vercel with domain configuration via GoDaddy, ensuring smooth performance and scalability.",
-   tech: ["React", "Tailwind CSS", "Supabase", "Web3Forms", "Vercel", "GoDaddy"],
-
-    image: "/ims.png",
-    liveLink: "https://www.islamicmissionschool.org/",
-    sourceCode: "https://github.com/atif-afsar/ims-website",
-    category: "Client Work"
-  },
-    {
-    id: "04",
-    caseStudyId: "learnlogix",
-    title: "LearnLogix Website",
-    description: "A full-featured education platform with a responsive UI, NodeMailer email integration, and a custom admin panel for managing content and inquiries efficiently.",
-    tech: ["React", "Node.js", "NodeMailer", "Admin Panel"],
-    image: "/learnlogix.png",
-    liveLink: "https://learnlogix.in/",
-    sourceCode: "https://github.com/atif-afsar/LearnLogix",
+  // ---------- Commercial agency & live client projects ----------
+  {
+    id: "erp",
+    featured: true,
+    title: "EduNexus – School & Coaching ERP Software",
+    description:
+      "Developed a centralized full-stack MERN ERP that digitizes admissions, fee collection and institutional operations for schools and coaching institutes in India. Live as a cloud product covering admissions, attendance with QR check-in, UPI fee collection with receipts, exams and report cards, staff payroll and parent portals.",
+    tech: ["MongoDB", "Express.js", "React", "Node.js", "Cloud SaaS"],
+    image: "/projects/edunexus.webp",
+    liveLink: "https://www.edunexus.network/",
+    sourceCode: "https://github.com/atif-afsar/ERP",
     category: "Client Work",
   },
   {
-    id: "01",
-    caseStudyId: "ice",
-    title: "Iceberg Website",
-    description: "A premium ice cream parlor website featuring a visually rich UI, smooth interactions, and a fully responsive, customer-focused design with modern animations and optimized performance.",
-    tech: ["HTML", "CSS", "JavaScript"],
-    image: "/ice.png",
-    liveLink: "https://iceberg-website-live.com",
-    sourceCode: "https://atif-afsar.github.io/iceberg-website/",
+    id: "brandsway",
+    title: "The BrandsWay Agency Platform + AI Lead Assistant",
+    description:
+      "Built a modern PR & marketing agency website with a visually engaging UI using React, Vite and Tailwind CSS, featuring a custom Groq API-powered AI assistant for instant visitor support and interactive lead engagement.",
+    tech: ["React", "Vite", "Tailwind CSS", "Groq API", "AI Lead Assistant"],
+    image: "/projects/brandsway.webp",
+    liveLink: "https://thebrandsway.com/",
+    sourceCode: "https://github.com/atif-afsar/BrandsWay-React",
+    category: "Client Work",
+  },
+  {
+    id: "velisqa",
+    title: "Velisqa – Full-Stack D2C E-Commerce Storefront",
+    description:
+      "Engineered a complete direct-to-consumer e-commerce platform with a conversion-optimized storefront, product/order admin panel, Razorpay checkout integration and automated delivery-partner fulfillment.",
+    tech: ["Conversion-Optimized Storefront", "Admin Panel", "Razorpay", "Delivery-Partner Fulfillment"],
+    image: "/projects/velisqa.webp",
+    liveLink: "https://www.velisqa.com/",
+    sourceCode: "https://github.com/atif-afsar/Velisqa",
+    category: "Client Work",
+  },
+  {
+    id: "mehdihasan",
+    title: "Mehdi Hasan Tailors – Animated Brand Experience",
+    description:
+      "Designed and developed a bespoke fashion/tailoring brand website using Framer Motion and Lenis for luxury smooth-scrolling animations and mobile responsiveness.",
+    tech: ["Framer Motion", "Lenis", "Smooth Scroll", "Responsive Design"],
+    image: "/projects/mehdihasan.webp",
+    liveLink: "https://mehdihasantailors.com/",
+    sourceCode: "https://github.com/atif-afsar/Mehndi-Hasan",
     category: "Client Work",
   },
   {
     id: "02",
     caseStudyId: "hayat",
-    title: "Hayat Eye Centre Website",
-    description: "A professional healthcare website designed for a real client, featuring a clean responsive layout and a NodeMailer-powered contact system for handling patient inquiries.",
+    title: "Hayat Eye Centre – Healthcare Lead-Gen Portal",
+    description:
+      "Delivered a responsive healthcare client website featuring a NodeMailer-automated patient inquiry and appointment contact pipeline.",
     tech: ["React", "Node.js", "NodeMailer", "Tailwind CSS"],
     image: "/hayat.png",
     liveLink: "https://hayateyecentre.in/",
@@ -46,46 +61,85 @@ export const projects = [
     category: "Client Work",
   },
   {
-    id: "03",
-    caseStudyId: "drift",
-    title: "Drift Academy Website",
-    description: "A modern academy website built with a clean, responsive design and well-structured sections to clearly present courses and information across all devices.",
-    tech: ["React", "TailwindCSS", "Web3 forms", "JavaScript", "Responsive Design"],
-    image: "/drift.png",
-    liveLink: "https://drift-academy.vercel.app/",
-    sourceCode: "https://github.com/atif-afsar/Drift-Academy",
+    id: "04",
+    caseStudyId: "learnlogix",
+    title: "LearnLogix – Education Portal",
+    description:
+      "High-performance education platform with a custom admin panel and NodeMailer inquiry capture, deployed on a custom domain.",
+    tech: ["React", "Node.js", "NodeMailer", "Admin Panel"],
+    image: "/learnlogix.png",
+    liveLink: "https://learnlogix.in/",
+    sourceCode: "https://github.com/atif-afsar/LearnLogix",
+    category: "Client Work",
+  },
+  {
+    id: "08",
+    caseStudyId: "ims",
+    title: "Islamic Mission School Portal",
+    description:
+      "High-performance school platform with a custom admin panel on a Supabase backend, Web3Forms inquiry capture and a custom GoDaddy/Vercel domain deployment.",
+    tech: ["React", "Tailwind CSS", "Supabase", "Web3Forms", "Vercel", "GoDaddy"],
+    image: "/ims.png",
+    liveLink: "https://www.islamicmissionschool.org/",
+    sourceCode: "https://github.com/atif-afsar/ims-website",
     category: "Client Work",
   },
 
-  {
-    id: "05",
-    caseStudyId: "moody",
-    title: "Moody Player - Mood-based Music Player",
-    description: "Revolutionary mood-based music player using React, Node.js, Face API, MongoDB, and ImageKit. Detects user emotions through webcam to play personalized songs with seamless user data and playlists integration.",
-    tech: ["React", "Node.js", "Face API", "MongoDB", "ImageKit"],
-    image: "/moody.png",
-    sourceCode: "https://github.com/atif-afsar/Moody-Player",
-    category: "Personal Project",
-  },
+  // ---------- AI & interactive media ----------
   {
     id: "06",
     caseStudyId: "gpt",
-    title: "Exact-GPT - AI Chatbot with Long-Term Memory",
-    description: "Built a GPT-based chatbot with persistent memory using embeddings and Pinecone. Stores chat history in MongoDB for personalized interactions with advanced AI responses and real-time messaging.",
-    tech: ["React", "Node.js", "OpenAI GPT", "Pinecone", "MongoDB", "Socket.io"],
+    title: "Exact-GPT – Persistent-Memory Conversational AI Agent",
+    description:
+      "Built a real-time conversational AI chatbot using the Gemini API, Pinecone vector embeddings for long-term user memory, MongoDB and Socket.io.",
+    tech: ["Gemini API", "Pinecone", "Vector Embeddings", "MongoDB", "Socket.io"],
     image: "/gpt.png",
     sourceCode: "https://github.com/atif-afsar/Exact-GPT",
-    category: "Personal Project",
+    category: "AI & Interactive Media",
+  },
+  {
+    id: "05",
+    caseStudyId: "moody",
+    title: "Moody Player – AI Emotion-Driven Media Web App",
+    description:
+      "Created an interactive media web app using React, Node.js, Face API and ImageKit that detects user facial expressions via webcam to personalize content delivery in real time.",
+    tech: ["React", "Node.js", "Face API", "ImageKit"],
+    image: "/moody.png",
+    sourceCode: "https://github.com/atif-afsar/Moody-Player",
+    category: "AI & Interactive Media",
   },
   {
     id: "07",
     caseStudyId: "nasa",
-    title: "NASA Project - Rocket Launch Dashboard",
-    description: "Built a React + Node.js dashboard to schedule and track rocket launches, storing launch history for reference. Created custom routes and APIs to manage missions, enhancing Node.js backend skills.",
-    tech: ["React", "Node.js", "Express", "MongoDB", "NASA API"],
+    title: "NASA Mission Control Dashboard",
+    description:
+      "Built an interactive data visualization and scheduling dashboard using React, Node.js and REST APIs.",
+    tech: ["React", "Node.js", "REST APIs"],
     image: "/nasa.png",
     sourceCode: "https://github.com/atif-afsar/NASA-Project",
-    category: "Personal Project",
+    category: "AI & Interactive Media",
   },
 
+  // ---------- Internship builds (InLighnX Global) ----------
+  {
+    id: "foodify",
+    title: "Foodify – Grocery E-Commerce Web App",
+    description:
+      "Fast-loading e-commerce grocery web app with real-time search, dynamic filtering and lazy loading.",
+    tech: ["React", "Redux Toolkit", "Tailwind CSS", "Vite"],
+    image: "/projects/foodify.webp",
+    liveLink: "https://foodify-atif.netlify.app/",
+    sourceCode: "https://github.com/atif-afsar/Foodify",
+    category: "Internship Builds",
+  },
+  {
+    id: "portfolio-v1",
+    title: "Portfolio Platform – Dark/Light Mode",
+    description: "Modern portfolio platform with dark/light mode and automated EmailJS lead capture.",
+    tech: ["React", "Tailwind CSS", "EmailJS"],
+    image: "/projects/portfolio-v1.webp",
+    liveLink: "https://my-portfolio1123.netlify.app/",
+    sourceCode: "https://github.com/atif-afsar/My-Portfolio",
+    category: "Internship Builds",
+  },
 ];

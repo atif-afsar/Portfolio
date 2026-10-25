@@ -60,8 +60,6 @@ Guidelines:
     let lastError = null;
 
     for (const model of FALLBACK_MODELS) {
-      let modelSucceeded = false;
-
       for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
           const controller = new AbortController();

@@ -407,7 +407,7 @@ const Projects = () => {
     restDelta: 0.001,
   });
 
-  const { introW, cardW, trackWidth, travel, scrollHeightVh } = useMemo(() => {
+  const { travel, scrollHeightVh } = useMemo(() => {
     if (isMobile) {
       return { 
         introW: 0, 
@@ -436,6 +436,7 @@ const Projects = () => {
   const introOpacity = useTransform(smoothProgress, [0, 0.3], [1, 0]);
   const introY = useTransform(smoothProgress, [0, 0.4], [0, prefersReducedMotion ? 0 : -40]);
   const introBlur = useTransform(smoothProgress, [0, 0.3], [0, 8]);
+  const introFilter = useTransform(introBlur, (v) => `blur(${v}px)`);
   const hintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
   const barScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
@@ -546,7 +547,7 @@ const Projects = () => {
             x: introX, 
             y: introY, 
             opacity: introOpacity,
-            filter: useTransform(introBlur, (v) => `blur(${v}px)`),
+            filter: introFilter,
           }}
           className="absolute left-0 top-0 h-full flex flex-col justify-center pl-12 md:pl-24 pr-8 z-10 pointer-events-none max-w-xl"
         >

@@ -1,20 +1,20 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useCallback } from "react";
 
+const navItems = [
+  { label: "Home", id: "home", num: "01" },
+  { label: "About", id: "about", num: "02" },
+  { label: "Skills", id: "skills", num: "03" },
+  { label: "Experience", id: "experience", num: "04" },
+  { label: "Projects", id: "projects", num: "05" },
+  { label: "Services", id: "services", num: "06" },
+  { label: "Contact", id: "contact", num: "07" },
+];
+
 const Sidebar = () => {
   const [activeSection, setActiveSection] = useState("home");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  const navItems = [
-    { label: "Home", id: "home", num: "01" },
-    { label: "About", id: "about", num: "02" },
-    { label: "Skills", id: "skills", num: "03" },
-    { label: "Experience", id: "experience", num: "04" },
-    { label: "Projects", id: "projects", num: "05" },
-    { label: "Services", id: "services", num: "06" },
-    { label: "Contact", id: "contact", num: "07" },
-  ];
 
   const scrollToSection = useCallback((sectionId) => {
     setActiveSection(sectionId);
@@ -55,7 +55,7 @@ const Sidebar = () => {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [navItems]);
+  }, []);
 
   // Handle resize and check mobile
   useEffect(() => {

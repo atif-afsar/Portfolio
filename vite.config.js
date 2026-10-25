@@ -49,11 +49,16 @@ function apiDevPlugin() {
   };
 }
 
+// Multi-page build: index.html is the 3D office, os/index.html is the OS that
+// runs inside the monitor iframe (also served standalone at /os/).
 export default defineConfig({
   plugins: [react(), tailwindcss(), apiDevPlugin()],
   build: {
-    // Code splitting configuration
     rollupOptions: {
+      input: {
+        main: 'index.html',
+        os: 'os/index.html',
+      },
       output: {
         manualChunks: {
           // Vendor chunks
@@ -61,7 +66,7 @@ export default defineConfig({
           'vendor-framer': ['framer-motion'],
           'vendor-gsap': ['gsap'],
           'vendor-icons': ['react-icons', 'lucide-react', '@heroicons/react'],
-          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
+          'vendor-three': ['three', '@tweenjs/tween.js'],
           // Section chunks for lazy loading
           'section-hero': ['./src/sections/Hero.jsx'],
           'section-projects': ['./src/sections/Projects.jsx'],
@@ -88,8 +93,9 @@ export default defineConfig({
     cssMinify: 'lightningcss',
     // Source maps only in dev
     sourcemap: false,
-    // Chunk size warnings
-    chunkSizeWarningLimit: 500,
+    // Chunk size warnings (three.js alone is ~570 kB; it is lazy-loaded with
+    // the 3D office, so it never blocks the first paint)
+    chunkSizeWarningLimit: 600,
     // Optimize images
     assetsInlineLimit: 4096,
     // Reduce initial bundle
@@ -113,4 +119,3 @@ export default defineConfig({
     exclude: ['node_modules/.vite']
   }
 })
-

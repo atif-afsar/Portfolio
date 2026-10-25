@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
-*{
+/* The classic site draws its own cursor (components/layout/Cursor.jsx).
+   Scoped so the 3D office / AtifOS keep the real pointer. */
+.classic-cursor * {
     cursor: none;
 }

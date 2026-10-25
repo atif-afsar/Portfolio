@@ -54,7 +54,7 @@ const Contact = () => {
           className="flex flex-col xs:flex-row gap-3 sm:gap-4 md:gap-6 justify-center items-center flex-wrap"
         >
           <a
-            href="mailto:atifafsar648@gmail.com"
+            href="mailto:atifafsar.dev@gmail.com"
             className="w-full xs:w-auto border border-yellow-400 px-5 sm:px-8 md:px-10 py-2.5 sm:py-3 md:py-4 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-all duration-300 font-bold text-xs sm:text-sm md:text-base rounded-sm hover:shadow-[0_0_20px_rgba(250,204,21,0.3)]"
           >
             Email Me

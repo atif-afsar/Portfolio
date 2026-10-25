@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO: this page is the OS shown inside the 3D monitor. It shares the
+         main page's content, so it points search engines at the root URL. -->
+    <title>AtifOS — Atif Afsar, MarTech &amp; Digital Growth Developer</title>
+    <meta name="description" content="Atif Afsar's portfolio desktop: MarTech &amp; Digital Growth Developer and Full Stack Web Engineer. Explore experience, projects like the EduNexus ERP, and contact details." />
+    <meta name="author" content="Atif Afsar" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://portfolio-rgzt.vercel.app/" />
+    <meta name="theme-color" content="#3e9697" />
+    <link rel="icon" type="image/png" href="/vector.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Tinos:ital,wght@0,400;0,700;1,400&family=VT323&display=swap" rel="stylesheet" />
+
+    <script>
+      // Inside the 3D monitor, the iframe swallows input. Forward it to the
+      // parent so the camera, hover-to-zoom and keyboard/mouse SFX still work.
+      if (window.parent !== window) {
+        var post = function (msg) { window.parent.postMessage(msg, window.location.origin); };
+        document.addEventListener('mousemove', function (e) { post({ type: 'mousemove', clientX: e.clientX, clientY: e.clientY }); });
+        document.addEventListener('mousedown', function () { post({ type: 'mousedown' }); });
+        document.addEventListener('mouseup', function () { post({ type: 'mouseup' }); });
+        document.addEventListener('keydown', function (e) { post({ type: 'keydown', key: e.key }); });
+        document.addEventListener('keyup', function (e) { post({ type: 'keyup', key: e.key }); });
+
+        // Chrome mis-targets wheel scrolling inside a 3D-transformed iframe
+        // (the event lands on <html>, so nothing scrolls). Scroll the nearest
+        // scrollable element under the pointer ourselves.
+        var canScroll = function (el, dx, dy) {
+          var s = getComputedStyle(el);
+          var y = /(auto|scroll)/.test(s.overflowY) && el.scrollHeight > el.clientHeight &&
+            (dy < 0 ? el.scrollTop > 0 : el.scrollTop + el.clientHeight < el.scrollHeight - 1);
+          var x = /(auto|scroll)/.test(s.overflowX) && el.scrollWidth > el.clientWidth &&
+            (dx < 0 ? el.scrollLeft > 0 : el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+          return (dy && y) || (dx && x);
+        };
+        document.addEventListener('wheel', function (e) {
+          var unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+          var dx = e.deltaX * unit, dy = e.deltaY * unit;
+          var el = document.elementFromPoint(e.clientX, e.clientY);
+          while (el && el !== document.documentElement && !canScroll(el, dx, dy)) el = el.parentElement;
+          if (!el || el === document.documentElement) return;
+          e.preventDefault();
+          el.scrollBy({ left: dx, top: dy });
+        }, { passive: false });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/os/main.jsx"></script>
+  </body>
+</html>

@@ -16,19 +16,52 @@ export default class OfficeAudio {
 
     this.ambienceKey = null;
 
-    bus.on("loadingScreenDone", () => {
-      // Defer AudioContext creation to satisfy autoplay policies
-      setTimeout(() => {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        this.context = new AC();
-        this.context.resume();
-        this.startAmbience();
-      }, 150);
-    });
+    this.unsubs = [
+      bus.on("loadingScreenDone", () => {
+        // Resume audio only after the START click (autoplay policies).
+        // Use the listener's context: every THREE.Audio node (and any filter
+        // connected to one) must belong to the same AudioContext.
+        setTimeout(() => {
+          this.context = this.listener.context;
+          this.context.resume();
+          this.startAmbience();
+        }, 150);
+      }),
+      bus.on("muteToggle", (mute) => {
+        this.listener.setMasterVolume(mute ? 0 : 1);
+      }),
+    ];
 
-    bus.on("muteToggle", (mute) => {
-      this.listener.setMasterVolume(mute ? 0 : 1);
-    });
+    // Input SFX. Events from inside the monitor arrive re-dispatched by
+    // MonitorScreen with `inComputer` set (port of AudioSources.ts).
+    this.lastKey = "";
+    this._onMouseDown = (event) => {
+      if (event.inComputer) this.play("mouseDown", { volume: 0.8, position: new THREE.Vector3(800, -300, 1200) });
+    };
+    this._onMouseUp = (event) => {
+      if (event.inComputer) this.play("mouseUp", { volume: 0.8, position: new THREE.Vector3(800, -300, 1200) });
+    };
+    this._onKeyDown = (event) => {
+      const key = event.key || "";
+      if (key.includes("_AUTO_")) {
+        this.play("ccType", { volume: 0.1, randDetuneScale: 0 });
+        return;
+      }
+      if (!event.inComputer || key === this.lastKey) return;
+      this.lastKey = key;
+      this.play("keyboardKeydown", {
+        volume: 0.8,
+        randDetuneScale: 0,
+        position: new THREE.Vector3(-300, -400, 1200),
+      });
+    };
+    this._onKeyUp = (event) => {
+      if (event.inComputer) this.lastKey = "";
+    };
+    document.addEventListener("mousedown", this._onMouseDown);
+    document.addEventListener("mouseup", this._onMouseUp);
+    document.addEventListener("keydown", this._onKeyDown);
+    document.addEventListener("keyup", this._onKeyUp);
   }
 
   startAmbience() {
@@ -99,6 +132,7 @@ export default class OfficeAudio {
   setFilterFrequency(key, freq) {
     const a = this.audioPool[key];
     if (!a) return;
+    if (!Number.isFinite(freq)) return;
     const f = Math.max(0, Math.min(22050, freq));
     const filter = a.getFilter();
     if (filter) filter.frequency.setValueAtTime(f, a.context.currentTime);
@@ -121,6 +155,11 @@ export default class OfficeAudio {
   }
 
   dispose() {
+    this.unsubs.forEach((off) => off());
+    document.removeEventListener("mousedown", this._onMouseDown);
+    document.removeEventListener("mouseup", this._onMouseUp);
+    document.removeEventListener("keydown", this._onKeyDown);
+    document.removeEventListener("keyup", this._onKeyUp);
     for (const key in this.audioPool) {
       try {
         this.audioPool[key].stop();
@@ -129,7 +168,8 @@ export default class OfficeAudio {
       }
     }
     this.audioPool = {};
-    if (this.context) this.context.close().catch(() => {});
+    // THREE shares one AudioContext across mounts, so suspend rather than close it.
+    if (this.context) this.context.suspend().catch(() => {});
     this.context = null;
   }
 }

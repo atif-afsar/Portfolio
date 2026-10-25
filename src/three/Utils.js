@@ -39,8 +39,10 @@ export class Sizes extends EventEmitter {
 export class Mouse extends EventEmitter {
   constructor() {
     super();
-    this.x = 0;
-    this.y = 0;
+    // start centred: touch screens may not move the "mouse" before the first
+    // tap, and (0,0) would swing the desk view hard to one side
+    this.x = window.innerWidth / 2;
+    this.y = window.innerHeight / 2;
     this.inComputer = false;
     this.on("mousemove", (event) => {
       if (event.clientX && event.clientY) {

@@ -9,8 +9,8 @@ export const personSchema = {
   name: 'Atif Afsar',
   url: 'https://atifafsar.com',
   image: 'https://atifafsar.com/public/hero.png',
-  description: 'Full Stack Developer & Creative Engineer',
-  jobTitle: 'Full Stack Developer',
+  description: 'MarTech & Digital Growth Developer | Full Stack Web Engineer & AI Creative Technologist',
+  jobTitle: 'Full Stack Web Developer',
   location: {
     '@type': 'Place',
     name: 'Aligarh, India'
@@ -18,7 +18,7 @@ export const personSchema = {
   sameAs: [
     'https://www.linkedin.com/in/atif-afsar-64903b33a?originalSubdomain=in',
     'https://github.com/atif-afsar',
-    'https://twitter.com/atif_afsar'
+    'https://leetcode.com/u/Atif-Afsar/'
   ],
   knowsAbout: [
     'React',
@@ -41,11 +41,11 @@ export const organizationSchema = {
   name: 'Atif Afsar',
   url: 'https://atifafsar.com',
   logo: 'https://atifafsar.com/public/hero.png',
-  description: 'Award-winning full stack developer specializing in React, Next.js, and high-performance web experiences',
+  description: 'Portfolio of Atif Afsar: full stack web apps, e-commerce platforms, AI chatbots and high-converting landing pages',
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'Customer Service',
-    email: 'atifafsar648@gmail.com',
+    email: 'atifafsar.dev@gmail.com',
     telephone: '+91-9389030329'
   },
   sameAs: [

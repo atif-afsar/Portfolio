@@ -1,68 +1,49 @@
-import { useEffect, useRef, useState } from "react";
-import OfficeEngine, { bus } from "../three/OfficeEngine.js";
+import { useEffect, useRef } from "react";
+import OfficeEngine from "../three/OfficeEngine.js";
 
-// React 19 StrictMode mounts effects twice in dev. Guard with a ref so only
-// one OfficeEngine instance (and one canvas) ever exists.
+// React 19 StrictMode mounts, unmounts and re-mounts effects in dev. Building
+// the engine twice would load every asset twice (duplicate BIOS lines, two
+// audio graphs), so disposal is deferred a tick and cancelled if the same
+// scene mounts straight back. A real unmount still disposes.
+let engine = null;
+let pendingDispose = null;
+
+// OfficeApp checks for WebGL before rendering this.
 const OfficeScene = () => {
   const glRef = useRef(null);
   const cssRef = useRef(null);
   const overlayRef = useRef(null);
-  const engineRef = useRef(null);
-  const [webglOk, setWebglOk] = useState(true);
 
   useEffect(() => {
-    // Feature-detect WebGL up front (mobile/low-end fallback hook)
-    try {
-      const c = document.createElement("canvas");
-      if (!(c.getContext("webgl") || c.getContext("experimental-webgl"))) {
-        setWebglOk(false);
-        return;
-      }
-    } catch {
-      setWebglOk(false);
-      return;
+    clearTimeout(pendingDispose);
+    pendingDispose = null;
+    if (!engine) {
+      engine = new OfficeEngine({
+        glEl: glRef.current,
+        cssEl: cssRef.current,
+        overlayEl: overlayRef.current,
+      });
+      if (import.meta.env.DEV) window.__office = engine;
     }
 
-    if (engineRef.current) return; // re-entrant mount guard
-
-    engineRef.current = new OfficeEngine({
-      glEl: glRef.current,
-      cssEl: cssRef.current,
-      overlayEl: overlayRef.current,
-    });
-    const engine = engineRef.current;
-
     return () => {
-      engine.dispose();
-      engineRef.current = null;
+      pendingDispose = setTimeout(() => {
+        engine?.dispose();
+        engine = null;
+      }, 0);
     };
   }, []);
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#000", overflow: "hidden" }}>
-      <div ref={glRef} style={{ position: "absolute", inset: 0 }} />
-      <div ref={cssRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+      {/* Same stacking as the reference: the WebGL canvas draws on top but lets
+          the pointer through to the CSS3D layer, so the monitor iframe gets
+          real hover/clicks (the GL scene punches a see-through hole for it). */}
+      <div ref={glRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+      <div ref={cssRef} style={{ position: "absolute", inset: 0 }} />
       <div ref={overlayRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
-      {!webglOk && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-            font: "16px/1.5 monospace",
-            padding: 24,
-            textAlign: "center",
-          }}
-        >
-          WebGL isn't available in this browser, so the 3D office can't start.
-        </div>
-      )}
     </div>
   );
 };
 
 export default OfficeScene;
-export { bus };

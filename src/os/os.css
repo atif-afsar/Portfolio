@@ -1,0 +1,846 @@
+/* AtifOS — a Win95-style desktop. Everything is scoped under .os-root so the
+   OS can also be rendered inline on the main page (mobile / no-WebGL). */
+
+.os-root {
+  --white: #ffffff;
+  --black: #000000;
+  --turquoise: #3e9697;
+  --light-gray: #c3c6ca;
+  --dark-gray: #86898d;
+  --blue: #0000a3;
+  --dark-blue: #0000aa;
+  --surface: #c0c0c0;
+  --surface-hover: #e9e9e9;
+  --button-face: #747474;
+  --button-shadow: #808080;
+  --window-frame: #2b2b2b;
+  --link: #0000ee;
+  --link-visited: #551a8b;
+
+  --border-raised-outer: inset -1px -1px var(--window-frame), inset 1px 1px var(--white);
+  --border-raised-inner: inset -2px -2px var(--button-shadow), inset 2px 2px var(--button-face);
+  --border-field: inset -1px -1px var(--white), inset 1px 1px var(--button-shadow),
+    inset -2px -2px var(--button-face), inset 2px 2px var(--window-frame);
+
+  --font-ui: Tahoma, "Microsoft Sans Serif", "MS Sans Serif", Geneva, Verdana, sans-serif;
+  --font-body: Tinos, "Times New Roman", Times, serif;
+  --font-display: "DM Serif Display", Tinos, "Times New Roman", serif;
+  --font-terminal: VT323, "Courier New", monospace;
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--turquoise);
+  color: var(--black);
+  font-family: var(--font-body);
+  image-rendering: pixelated;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.os-root *,
+.os-root *::before,
+.os-root *::after {
+  box-sizing: border-box;
+}
+
+.os-root p,
+.os-root h1,
+.os-root h2,
+.os-root h3,
+.os-root h4,
+.os-root ul {
+  margin: 0;
+}
+
+.os-root p,
+.os-root li {
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.os-root h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 1;
+}
+
+.os-root h2 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.15;
+}
+
+.os-root h3 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.os-root h4 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.os-root a {
+  color: var(--link);
+}
+
+.os-root a:visited {
+  color: var(--link-visited);
+}
+
+.os-root li {
+  margin-bottom: 12px;
+}
+
+.os-root ::selection {
+  background: var(--dark-blue);
+  color: var(--white);
+}
+
+/* Selectable text inside windows (the chrome stays unselectable) */
+.os-root .win-content {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* ---------- Desktop ---------- */
+
+.os-desktop {
+  position: absolute;
+  inset: 0;
+}
+
+.os-shortcuts {
+  position: absolute;
+  top: 16px;
+  left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.os-shortcut {
+  width: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 2px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.os-shortcut svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 4px;
+}
+
+.os-shortcut-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--white);
+  text-align: center;
+  padding: 1px 3px;
+  line-height: 1.2;
+  border: 1px dotted transparent;
+}
+
+.os-shortcut.selected svg {
+  filter: brightness(0.6) sepia(1) hue-rotate(190deg) saturate(4);
+}
+
+.os-shortcut.selected .os-shortcut-label {
+  background: var(--dark-blue);
+  border-color: var(--white);
+}
+
+/* ---------- Window ---------- */
+
+/* Each window lives on its own full-desktop layer so z-index ordering works;
+   the layer ignores the pointer, the window itself doesn't. */
+.os-window-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.os-window-layer.minimized {
+  visibility: hidden;
+}
+
+.os-window-layer .win,
+.os-window-layer .win-interaction-shield {
+  pointer-events: auto;
+}
+
+.win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--light-gray);
+  border: 1px solid var(--black);
+  border-top-color: var(--light-gray);
+  border-left-color: var(--light-gray);
+}
+
+.win-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 2px;
+  border: 1px solid var(--dark-gray);
+  border-top-color: var(--white);
+  border-left-color: var(--white);
+}
+
+.win-titlebar {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding-right: 2px;
+  background: var(--blue);
+  touch-action: none;
+}
+
+.win.inactive .win-titlebar {
+  background: var(--dark-gray);
+}
+
+.win-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 4px;
+  min-width: 0;
+  cursor: move;
+  height: 100%;
+}
+
+.win-title svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.win-title span {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.win.inactive .win-title span {
+  color: var(--light-gray);
+}
+
+.win-buttons {
+  display: flex;
+  gap: 0;
+}
+
+.win-buttons .os-btn + .os-btn.close {
+  margin-left: 2px;
+}
+
+.os-btn {
+  width: 16px;
+  height: 14px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 0;
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  cursor: pointer;
+}
+
+.os-btn:active {
+  box-shadow: var(--border-raised-inner), var(--border-raised-outer);
+}
+
+.os-btn svg {
+  width: 8px;
+  height: 8px;
+}
+
+.win-body {
+  flex: 1;
+  min-height: 0;
+  margin: 8px 0;
+  display: flex;
+  border: 1px solid var(--white);
+  border-top-color: var(--dark-gray);
+  border-left-color: var(--dark-gray);
+}
+
+.win-body-inner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  border: 1px solid var(--light-gray);
+  border-top-color: var(--black);
+  border-left-color: var(--black);
+}
+
+.win-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--white);
+}
+
+.win-statusbar {
+  display: flex;
+  gap: 2px;
+  height: 20px;
+}
+
+.win-status-cell {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  border: 1px solid var(--white);
+  border-top-color: var(--dark-gray);
+  border-left-color: var(--dark-gray);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.win-status-cell.grow {
+  flex: 5;
+}
+
+.win-status-cell.spacer {
+  width: 16px;
+}
+
+.win-status-cell.resize {
+  flex: 2;
+  justify-content: flex-end;
+  padding: 0;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+
+.win-status-cell.resize svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Dotted outline shown while dragging / resizing (Win95 "show outline") */
+.win-outline {
+  position: absolute;
+  pointer-events: none;
+  border: 3px dotted var(--white);
+  mix-blend-mode: difference;
+  z-index: 100000;
+}
+
+.win-interaction-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 99999;
+}
+
+/* ---------- Toolbar ---------- */
+
+.os-toolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  background: var(--light-gray);
+  border-top: 1px solid var(--light-gray);
+  box-shadow: inset 0 1px var(--white);
+  z-index: 100000;
+  font-family: var(--font-ui);
+}
+
+.os-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 6px;
+  border: 1px solid var(--white);
+  border-right-color: var(--black);
+  border-bottom-color: var(--black);
+  box-shadow: inset -1px -1px var(--dark-gray);
+  background: var(--light-gray);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: var(--black);
+  min-width: 0;
+}
+
+.os-tab svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.os-tab.start {
+  margin-left: 3px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.os-tab.pressed {
+  border-color: var(--black);
+  border-right-color: var(--white);
+  border-bottom-color: var(--white);
+  box-shadow: inset 1px 1px var(--dark-gray);
+  background-color: var(--surface-hover);
+  background-image: linear-gradient(45deg, var(--white) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--white) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--white) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--white) 75%);
+  background-size: 4px 4px;
+  background-position: 0 0, 0 2px, 2px -2px, -2px 0;
+}
+
+.os-tabs {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  margin: 0 4px;
+  min-width: 0;
+}
+
+.os-tabs .os-tab {
+  flex: 1;
+  max-width: 220px;
+}
+
+.os-tabs .os-tab span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.os-tray {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  margin-right: 4px;
+  padding: 0 8px;
+  border: 1px solid var(--white);
+  border-top-color: var(--dark-gray);
+  border-left-color: var(--dark-gray);
+  font-size: 12px;
+}
+
+.os-tray svg {
+  width: 16px;
+  height: 16px;
+}
+
+.os-start-menu {
+  position: absolute;
+  bottom: 30px;
+  left: 3px;
+  width: 240px;
+  display: flex;
+  background: var(--light-gray);
+  border: 1px solid var(--white);
+  border-right-color: var(--black);
+  border-bottom-color: var(--black);
+  box-shadow: inset -1px -1px var(--dark-gray);
+  z-index: 100001;
+}
+
+.os-start-brand {
+  width: 30px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--dark-gray);
+  padding-bottom: 8px;
+}
+
+.os-start-brand span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-terminal);
+  font-size: 30px;
+  letter-spacing: 1px;
+  color: var(--light-gray);
+}
+
+.os-start-brand b {
+  color: var(--white);
+  font-weight: 400;
+}
+
+.os-start-items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0;
+}
+
+.os-start-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--black);
+  cursor: pointer;
+}
+
+.os-start-item svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.os-start-item:hover,
+.os-start-item:focus-visible {
+  background: var(--dark-blue);
+  color: var(--white);
+  outline: none;
+}
+
+.os-start-sep {
+  height: 2px;
+  margin: 3px 2px;
+  border-top: 1px solid var(--dark-gray);
+  border-bottom: 1px solid var(--white);
+}
+
+/* ---------- Shared site styles (inside windows) ---------- */
+
+.site-button {
+  background: var(--surface-hover);
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  border: 0;
+  border-radius: 0;
+  padding: 4px 14px;
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--black);
+  cursor: pointer;
+}
+
+.site-button:hover {
+  background: var(--surface);
+}
+
+.site-button:active {
+  background: var(--button-shadow);
+  box-shadow: var(--border-raised-inner), var(--border-raised-outer);
+}
+
+.site-button:disabled {
+  background: var(--button-shadow);
+  cursor: not-allowed;
+}
+
+.big-button {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding: 24px;
+  background: none;
+  border: 0;
+  text-align: left;
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  cursor: pointer;
+  color: var(--black);
+}
+
+.os-root a.big-button,
+.os-root a.site-button {
+  color: var(--black);
+}
+
+.big-button:hover {
+  background: var(--surface-hover);
+}
+
+.big-button:active {
+  background: var(--surface);
+  box-shadow: var(--border-raised-inner), var(--border-raised-outer);
+}
+
+.os-root input,
+.os-root textarea {
+  width: 100%;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 0;
+  resize: none;
+  box-shadow: var(--border-field);
+  font-family: var(--font-body);
+  font-size: 18px;
+  background: var(--white);
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.os-root textarea {
+  height: 150px;
+}
+
+.os-root input:focus,
+.os-root textarea:focus {
+  outline: none;
+  background: #fbffc4;
+}
+
+.text-block {
+  margin: 16px 0 32px;
+  display: flex;
+  flex-direction: column;
+  text-align: justify;
+}
+
+.captioned-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.captioned-image img {
+  width: 100%;
+  border: 1px solid var(--black);
+}
+
+.captioned-image p {
+  font-size: 15px;
+  margin-top: 6px;
+}
+
+.loading-dots::after {
+  display: inline-block;
+  content: "";
+  animation: os-dots steps(1, end) 1s infinite;
+}
+
+@keyframes os-dots {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+
+.blinking-cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.12em;
+  background: var(--white);
+  animation: os-blink 0.65s step-end infinite;
+}
+
+@keyframes os-blink {
+  50% { background: transparent; }
+}
+
+/* ---------- Showcase layout ---------- */
+
+.showcase {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.showcase-nav {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 48px;
+  overflow: hidden;
+}
+
+.showcase-nav-name p {
+  font-family: var(--font-display);
+  font-size: 38px;
+  line-height: 1;
+}
+
+.showcase-nav-name h3 {
+  margin-top: 12px;
+}
+
+.showcase-nav-links {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+}
+
+.showcase-nav-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: -12px 0 0 32px;
+}
+
+.showcase-page {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 32px 64px 64px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.nav-link h4,
+.nav-link .nav-link-text {
+  text-decoration: underline;
+  color: var(--link);
+  cursor: pointer;
+}
+
+.nav-link.visited h4,
+.nav-link.visited .nav-link-text {
+  color: var(--link-visited);
+}
+
+.nav-link.pressed h4,
+.nav-link.pressed .nav-link-text {
+  color: red;
+}
+
+.nav-link-here {
+  width: 10px;
+  height: 10px;
+  border: 3px solid var(--link-visited);
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-row h1 {
+  font-size: 48px;
+}
+
+.featured-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 2px 10px;
+  background: #0000a3;
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 12px !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.tech-line {
+  font-size: 15px;
+  color: #333;
+}
+
+/* Narrow screens (phones, or the OS inline on the main page) */
+.os-root.compact .showcase {
+  flex-direction: column;
+}
+
+.os-root.compact .showcase-nav {
+  width: 100%;
+  padding: 12px 16px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  border-bottom: 1px solid var(--dark-gray);
+}
+
+.os-root.compact .showcase-nav-name {
+  display: none;
+}
+
+.os-root.compact .showcase-nav-links {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+}
+
+.os-root.compact .nav-link h4 {
+  white-space: nowrap;
+}
+
+.os-root.compact .showcase-nav-sub {
+  order: 10;
+  flex-basis: 100%;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0;
+  gap: 18px;
+}
+
+.os-root.compact .showcase-page {
+  padding: 20px 16px 48px;
+}
+
+.os-root.compact h1 {
+  font-size: 40px;
+}
+
+.os-root.compact .header-row h1 {
+  font-size: 32px;
+}
+
+.os-root.compact .big-button {
+  padding: 14px;
+  gap: 14px;
+}
+
+.os-root.compact .os-shortcuts {
+  flex-direction: row;
+  flex-wrap: wrap;
+  right: 6px;
+}
+
+.os-root.compact .os-tray .os-tray-volume {
+  display: none;
+}

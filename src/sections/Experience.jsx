@@ -1,10 +1,9 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import { experience } from '../data/experience';
 
 const ExperienceCard = ({ exp, index }) => {
   const cardRef = useRef(null);
-  const isInView = useInView(cardRef, { once: false, margin: "-10% 0px -20% 0px" });
   const isLeft = index % 2 === 0;
 
   return (

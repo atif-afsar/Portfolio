@@ -15,7 +15,7 @@ const TypingDots = () => (
   </div>
 );
 
-const TypedMessage = ({ text, isBot }) => {
+const TypedMessage = ({ text }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 

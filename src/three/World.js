@@ -103,7 +103,7 @@ export default class World {
     this.disposed = false;
 
     // Build once resources finish loading
-    bus.on("resourcesReady", () => this.build());
+    this.offReady = bus.on("resourcesReady", () => this.build());
     // Build immediately if already ready (React re-mount case)
     if (resources.loaded === resources.toLoad) this.build();
   }
@@ -144,6 +144,7 @@ export default class World {
 
   dispose() {
     this.disposed = true;
+    this.offReady();
     for (const g of this.groups) {
       this.scene.remove(g);
       g.traverse?.((o) => {
